@@ -1,0 +1,106 @@
+import { useState, useEffect } from 'react';
+
+export default function PaymentModal({ isOpen, onClose, debt, onPay }) {
+    const [amount, setAmount] = useState('');
+
+    useEffect(() => {
+        if (isOpen) setAmount('');
+    }, [isOpen]);
+
+    if (!debt) return null;
+
+    const remaining = debt.amount - debt.paidAmount;
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!amount || parseFloat(amount) <= 0) return;
+
+        const medium = document.getElementById('payment-medium').value;
+        const note = document.getElementById('payment-note').value;
+        const evidenceFile = document.getElementById('payment-evidence').files[0];
+
+        onPay(debt.id, {
+            amount: parseFloat(amount),
+            medium,
+            note,
+            evidence: evidenceFile ? evidenceFile.name : null
+        });
+        onClose();
+    };
+
+    return (
+        <form onSubmit={handleSubmit}>
+            <div style={{ marginBottom: '24px', textAlign: 'center' }}>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
+                    Registrando pago para
+                    <strong style={{ color: 'var(--text-primary)', marginLeft: '4px' }}>{debt.reason}</strong>
+                </p>
+                <h2 style={{ fontSize: '32px', marginTop: '8px' }}>
+                    ${remaining.toFixed(2)}
+                    <span style={{ fontSize: '14px', color: 'var(--text-muted)', fontWeight: 'normal' }}> restante</span>
+                </h2>
+            </div>
+
+            <div className="form-group">
+                <label className="form-label">Monto del Pago</label>
+                <div style={{ position: 'relative' }}>
+                    <span style={{ position: 'absolute', left: '12px', top: '10px', color: 'var(--text-muted)' }}>$</span>
+                    <input
+                        type="number"
+                        className="form-input"
+                        placeholder="0.00"
+                        style={{ paddingLeft: '32px', fontSize: '18px' }}
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        max={remaining}
+                        step="0.01"
+                        required
+                        autoFocus
+                    />
+                </div>
+                <div style={{ marginTop: '8px', display: 'flex', gap: '8px' }}>
+                    <button
+                        type="button"
+                        className="badge"
+                        style={{ background: 'var(--bg-surface-hover)', cursor: 'pointer', border: 'none', color: 'var(--text-secondary)' }}
+                        onClick={() => setAmount((remaining / 2).toFixed(2))}
+                    >
+                        50%
+                    </button>
+                    <button
+                        type="button"
+                        className="badge"
+                        style={{ background: 'var(--bg-surface-hover)', cursor: 'pointer', border: 'none', color: 'var(--text-secondary)' }}
+                        onClick={() => setAmount(remaining.toFixed(2))}
+                    >
+                        Full Amount
+                    </button>
+                </div>
+            </div>
+
+            <div className="form-group">
+                <label className="form-label">Medio de Pago</label>
+                <select className="form-select" id="payment-medium">
+                    <option value="Transferencia">Transferencia</option>
+                    <option value="Efectivo">Efectivo</option>
+                    <option value="Tarjeta">Tarjeta</option>
+                    <option value="Otro">Otro</option>
+                </select>
+            </div>
+
+            <div className="form-group">
+                <label className="form-label">Observaciones</label>
+                <input type="text" className="form-input" placeholder="Ej: Pago parcial..." id="payment-note" />
+            </div>
+
+            <div className="form-group">
+                <label className="form-label">Comprobante (Opcional)</label>
+                <input type="file" className="form-input" style={{ fontSize: '13px' }} id="payment-evidence" />
+            </div>
+
+            <button type="submit" className="btn-primary" style={{ backgroundColor: 'var(--color-success)' }}>
+                Confirmar Pago
+            </button>
+        </form >
+    );
+}
