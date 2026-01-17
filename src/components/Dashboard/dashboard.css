@@ -215,3 +215,94 @@
     opacity: 0;
     animation: fadeIn 0.5s ease forwards;
 }
+
+/* Responsive Table Grid */
+.debt-grid {
+    display: grid;
+    grid-template-columns: 48px 2fr 1fr 1fr 1fr 100px 140px;
+    gap: 16px;
+    align-items: center;
+}
+
+.doc-header {
+    padding: 0 0 12px 0;
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: 16px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.debt-item-minimal {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.show-mobile {
+    display: none;
+}
+
+@media (max-width: 1024px) {
+
+    /* Stack split grid on Tablet/Mobile */
+    .dashboard-grid-slpit {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .summary-grid,
+    .dashboard-grid-slpit {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        width: 100% !important;
+    }
+
+    .summary-card,
+    .card {
+        width: 100% !important;
+        box-sizing: border-box;
+        margin-right: 0 !important;
+    }
+
+    /* Mobile Table Layout */
+    .debt-grid {
+        grid-template-columns: 48px 1fr auto;
+        gap: 12px;
+    }
+
+    /* ... rest of existing mobile styles ... */
+
+    /* Chart responsiveness */
+    .chart-content {
+        flex-direction: column-reverse;
+        /* Chart on top, legend below or vice versa */
+        align-items: center;
+        text-align: center;
+    }
+
+    .chart-legend {
+        width: 100%;
+        margin-top: 16px;
+    }
+
+    .hide-mobile {
+        display: none;
+    }
+
+    .show-mobile {
+        display: block;
+    }
+
+    .mobile-hide-text {
+        font-size: 0 !important;
+        /* Hide text but keep icon if present (or just rely on padding) */
+    }
+
+    .mobile-hide-text::after {
+        content: '...';
+        font-size: 14px;
+    }
+}

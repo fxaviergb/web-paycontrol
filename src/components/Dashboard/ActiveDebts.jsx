@@ -20,18 +20,18 @@ export default function ActiveDebts({ debts, onDebtClick, onPayClick }) {
                 ) : (
                     <>
                         {/* Table Header Row */}
-                        <div className="debt-header-row" style={{ display: 'grid', gridTemplateColumns: '48px 2fr 1fr 1fr 1fr 100px 140px', gap: '16px', padding: '0 0 12px 0', borderBottom: '1px solid var(--border-subtle)', marginBottom: '16px', color: 'var(--text-secondary)', fontSize: '12px', fontWeight: '600' }}>
+                        <div className="debt-grid doc-header">
                             <div></div> {/* Icon */}
                             <div>DEUDA</div>
-                            <div>SOLICITADO</div>
-                            <div>INICIAL</div>
-                            <div>PAGADO</div>
-                            <div>ESTADO</div>
+                            <div className="hide-mobile">SOLICITADO</div>
+                            <div className="hide-mobile">INICIAL</div>
+                            <div className="hide-mobile">PAGADO</div>
+                            <div className="hide-mobile">ESTADO</div>
                             <div>ACCIONES</div>
                         </div>
 
                         {activeDebts.map((debt) => (
-                            <div key={debt.id} className="debt-item-minimal" style={{ display: 'grid', gridTemplateColumns: '48px 2fr 1fr 1fr 1fr 100px 140px', gap: '16px', alignItems: 'center', padding: '16px 0', borderBottom: '1px solid var(--border-subtle)' }}>
+                            <div key={debt.id} className="debt-item-minimal debt-grid">
                                 <div className={`debt-icon ${debt.type}`}>
                                     {debt.type === 'lent' ? <ArrowUpRight size={20} /> : <ArrowDownLeft size={20} />}
                                 </div>
@@ -39,19 +39,27 @@ export default function ActiveDebts({ debts, onDebtClick, onPayClick }) {
                                 <div className="debt-info">
                                     <h4 style={{ fontSize: '14px', marginBottom: '2px' }}>{debt.counterparty}</h4>
                                     <span className="debt-reason" style={{ fontSize: '13px' }}>{debt.reason}</span>
+                                    {/* Mobile Only Meta */}
+                                    <div className="show-mobile" style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px' }}>
+                                        <span style={{ fontWeight: '600', color: debt.type === 'lent' ? 'var(--color-success)' : 'var(--text-primary)' }}>
+                                            ${debt.amount.toFixed(2)}
+                                        </span>
+                                        <span style={{ margin: '0 4px' }}>•</span>
+                                        <span>{debt.date}</span>
+                                    </div>
                                 </div>
 
-                                <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{debt.date}</div>
+                                <div className="hide-mobile" style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{debt.date}</div>
 
-                                <div style={{ fontSize: '14px', fontWeight: '600' }}>${debt.amount.toFixed(2)}</div>
+                                <div className="hide-mobile" style={{ fontSize: '14px', fontWeight: '600' }}>${debt.amount.toFixed(2)}</div>
 
-                                <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--color-success)' }}>${debt.paidAmount.toFixed(2)}</div>
+                                <div className="hide-mobile" style={{ fontSize: '14px', fontWeight: '600', color: 'var(--color-success)' }}>${debt.paidAmount.toFixed(2)}</div>
 
-                                <div>
+                                <div className="hide-mobile">
                                     <span className="badge warning"><Clock size={12} /> Pendiente</span>
                                 </div>
 
-                                <div style={{ display: 'flex', gap: '8px' }}>
+                                <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
                                     <button
                                         className="btn-secondary"
                                         style={{ padding: '6px 12px', fontSize: '12px' }}
@@ -60,7 +68,7 @@ export default function ActiveDebts({ debts, onDebtClick, onPayClick }) {
                                         Pagar
                                     </button>
                                     <button
-                                        className="btn-text"
+                                        className="btn-text mobile-hide-text"
                                         style={{ padding: '6px 8px', fontSize: '12px', color: 'var(--text-muted)', background: 'transparent' }}
                                         onClick={(e) => { e.stopPropagation(); onDebtClick(debt); }}
                                     >

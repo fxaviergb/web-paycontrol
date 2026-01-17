@@ -49,7 +49,7 @@ export default function App() {
         amount: paymentData.amount,
         medium: paymentData.medium,
         note: paymentData.note,
-        date: new Date().toISOString().split('T')[0],
+        date: paymentData.date || new Date().toISOString().split('T')[0],
         evidence: paymentData.evidence
       };
 

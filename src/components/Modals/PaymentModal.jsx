@@ -2,9 +2,13 @@ import { useState, useEffect } from 'react';
 
 export default function PaymentModal({ isOpen, onClose, debt, onPay }) {
     const [amount, setAmount] = useState('');
+    const [date, setDate] = useState(new Date().toLocaleString('sv').slice(0, 16).replace(' ', 'T'));
 
     useEffect(() => {
-        if (isOpen) setAmount('');
+        if (isOpen) {
+            setAmount('');
+            setDate(new Date().toLocaleString('sv').slice(0, 16).replace(' ', 'T'));
+        }
     }, [isOpen]);
 
     if (!debt) return null;
@@ -23,6 +27,7 @@ export default function PaymentModal({ isOpen, onClose, debt, onPay }) {
             amount: parseFloat(amount),
             medium,
             note,
+            date,
             evidence: evidenceFile ? evidenceFile.name : null
         });
         onClose();
@@ -39,6 +44,17 @@ export default function PaymentModal({ isOpen, onClose, debt, onPay }) {
                     ${remaining.toFixed(2)}
                     <span style={{ fontSize: '14px', color: 'var(--text-muted)', fontWeight: 'normal' }}> restante</span>
                 </h2>
+            </div>
+
+            <div className="form-group">
+                <label className="form-label">Fecha y Hora</label>
+                <input
+                    type="datetime-local"
+                    className="form-input"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    required
+                />
             </div>
 
             <div className="form-group">

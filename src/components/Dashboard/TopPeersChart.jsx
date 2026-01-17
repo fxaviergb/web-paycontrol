@@ -81,7 +81,7 @@ export default function TopPeersChart({ debts }) {
     };
 
     return (
-        <div className="card fade-in" style={{ animationDelay: '0.4s', height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <div className="card chart-card fade-in" style={{ animationDelay: '0.4s' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <h3 style={{ fontSize: '16px', fontWeight: '600' }}>Top Personas</h3>
 
@@ -122,14 +122,14 @@ export default function TopPeersChart({ debts }) {
                 </div>
             </div>
 
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+            <div className="chart-content">
                 {chartData.slices.length === 0 ? (
                     <div className="text-muted" style={{ fontSize: '13px' }}>No hay datos</div>
                 ) : (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '24px', width: '100%' }}>
 
                         {/* Values List (Legend) */}
-                        <div style={{ flex: 1 }}>
+                        <div className="chart-legend">
                             {chartData.slices.map((slice) => (
                                 <div key={slice.name} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px', fontSize: '12px' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

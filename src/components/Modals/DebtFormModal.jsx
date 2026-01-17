@@ -9,7 +9,8 @@ export default function DebtFormModal({ isOpen, onClose, onAdd }) {
         reason: '',
         medium: 'Transferencia',
         evidence: null,
-        date: new Date().toISOString().split('T')[0]
+        // Initialize with local simplified ISO format (YYYY-MM-DDTHH:mm)
+        date: new Date().toLocaleString('sv').slice(0, 16).replace(' ', 'T')
     });
 
     const handleSubmit = (e) => {
@@ -33,7 +34,7 @@ export default function DebtFormModal({ isOpen, onClose, onAdd }) {
             counterparty: '',
             amount: '',
             reason: '',
-            date: new Date().toISOString().split('T')[0]
+            date: new Date().toLocaleString('sv').slice(0, 16).replace(' ', 'T')
         });
         onClose();
     };
@@ -42,34 +43,33 @@ export default function DebtFormModal({ isOpen, onClose, onAdd }) {
         <form onSubmit={handleSubmit}>
             <div className="form-group">
                 <label className="form-label">Tipo de operación</label>
-                <div style={{ display: 'flex', gap: '10px' }}>
+                <div style={{ display: 'flex', gap: '12px' }}>
                     <button
                         type="button"
-                        className={`form - input ${formData.type === 'lent' ? 'active-type' : ''} `}
-                        style={{
-                            backgroundColor: formData.type === 'lent' ? 'rgba(99, 102, 241, 0.2)' : '',
-                            borderColor: formData.type === 'lent' ? 'var(--color-accent)' : '',
-                            textAlign: 'center',
-                            cursor: 'pointer'
-                        }}
+                        className={`type-button ${formData.type === 'lent' ? 'active' : ''}`}
                         onClick={() => setFormData({ ...formData, type: 'lent' })}
                     >
                         Presté dinero
                     </button>
                     <button
                         type="button"
-                        className={`form - input ${formData.type === 'borrowed' ? 'active-type' : ''} `}
-                        style={{
-                            backgroundColor: formData.type === 'borrowed' ? 'rgba(99, 102, 241, 0.2)' : '',
-                            borderColor: formData.type === 'borrowed' ? 'var(--color-accent)' : '',
-                            textAlign: 'center',
-                            cursor: 'pointer'
-                        }}
+                        className={`type-button ${formData.type === 'borrowed' ? 'active' : ''}`}
                         onClick={() => setFormData({ ...formData, type: 'borrowed' })}
                     >
                         Me prestaron
                     </button>
                 </div>
+            </div>
+
+            <div className="form-group">
+                <label className="form-label">Fecha y Hora</label>
+                <input
+                    type="datetime-local"
+                    className="form-input"
+                    value={formData.date}
+                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                    required
+                />
             </div>
 
             <div className="form-group">
