@@ -8,10 +8,13 @@ import {
     Wallet,
     ArrowRight,
     CheckCircle2,
-    Clock
+    Clock,
+    Archive,
+    RotateCcw,
+    Trash2
 } from 'lucide-react';
 
-export default function DebtDetailsModal({ isOpen, onClose, debt, onPayClick }) {
+export default function DebtDetailsModal({ debt, onClose, onPayClick, onArchive, onReactivate, onDeletePayment }) {
     if (!debt) return null;
 
     const remaining = debt.amount - debt.paidAmount;
@@ -134,6 +137,32 @@ export default function DebtDetailsModal({ isOpen, onClose, debt, onPayClick }) 
                 </div>
             </div>
 
+            {/* Observations & Deadlines */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '28px' }}>
+                {debt.dueDate && (
+                    <div style={{ padding: '12px 16px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', borderLeft: '3px solid #f59e0b', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <Calendar size={16} style={{ color: '#fbbf24' }} />
+                            <span style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-secondary)' }}>Devolución estimada:</span>
+                        </div>
+                        <span style={{ fontSize: '14px', fontWeight: '700', color: '#fbbf24' }}>
+                            {new Date(debt.dueDate).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </span>
+                    </div>
+                )}
+
+                {debt.observations && (
+                    <div style={{ padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', borderLeft: '3px solid var(--color-accent)' }}>
+                        <h4 style={{ fontSize: '13px', fontWeight: '700', color: 'var(--color-accent)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <FileText size={14} /> Observaciones
+                        </h4>
+                        <p style={{ fontSize: '14px', color: 'var(--text-secondary)', lineHeight: '1.6', fontStyle: 'italic' }}>
+                            "{debt.observations}"
+                        </p>
+                    </div>
+                )}
+            </div>
+
             {/* Timeline Section */}
             <div className="history-section">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
@@ -174,11 +203,35 @@ export default function DebtDetailsModal({ isOpen, onClose, debt, onPayClick }) 
                                                 {payment.medium && <><span style={{ opacity: 0.3 }}>•</span> <CreditCard size={10} /> {payment.medium}</>}
                                             </div>
                                         </div>
-                                        {payment.note && (
-                                            <div title={payment.note} style={{ color: 'var(--text-secondary)', background: 'rgba(255,255,255,0.05)', padding: '6px', borderRadius: '6px' }}>
-                                                <FileText size={14} />
-                                            </div>
-                                        )}
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            {payment.note && (
+                                                <div title={payment.note} style={{ color: 'var(--text-secondary)', background: 'rgba(255,255,255,0.05)', padding: '6px', borderRadius: '6px' }}>
+                                                    <FileText size={14} />
+                                                </div>
+                                            )}
+                                            <button
+                                                onClick={() => {
+                                                    if (window.confirm('¿Estás seguro de eliminar este pago?')) {
+                                                        onDeletePayment(debt.id, payment.id);
+                                                    }
+                                                }}
+                                                style={{
+                                                    background: 'rgba(239, 68, 68, 0.1)',
+                                                    border: '1px solid rgba(239, 68, 68, 0.2)',
+                                                    color: '#ef4444',
+                                                    padding: '6px',
+                                                    borderRadius: '6px',
+                                                    cursor: 'pointer',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    transition: 'all 0.2s'
+                                                }}
+                                                className="delete-payment-btn"
+                                            >
+                                                <Trash2 size={14} />
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
@@ -188,27 +241,78 @@ export default function DebtDetailsModal({ isOpen, onClose, debt, onPayClick }) 
             </div>
 
             {/* Action Area */}
-            {debt.status === 'active' && (
-                <div style={{ marginTop: '32px' }}>
+            <div style={{ marginTop: '32px', display: 'flex', gap: '12px', alignItems: 'center' }}>
+                {debt.status === 'active' && (
                     <button
                         onClick={onPayClick}
                         className="btn-primary"
                         style={{
-                            width: '100%',
-                            padding: '16px',
-                            borderRadius: '14px',
+                            flex: 1,
+                            height: '52px',
+                            padding: '0 16px',
+                            borderRadius: '16px',
                             fontWeight: '600',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             gap: '8px',
-                            boxShadow: '0 8px 24px rgba(79, 70, 229, 0.2)'
+                            boxShadow: '0 8px 24px rgba(79, 70, 229, 0.2)',
+                            margin: 0,
+                            border: '1px solid transparent'
                         }}
                     >
                         Registrar Pago <ArrowRight size={18} />
                     </button>
-                </div>
-            )}
+                )}
+
+                {debt.status === 'archived' ? (
+                    <button
+                        onClick={() => onReactivate(debt.id)}
+                        className="btn-primary"
+                        style={{
+                            flex: 1,
+                            height: '52px',
+                            padding: '0 16px',
+                            borderRadius: '16px',
+                            fontWeight: '600',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px',
+                            boxShadow: '0 8px 24px rgba(79, 70, 229, 0.2)',
+                            margin: 0,
+                            border: '1px solid transparent'
+                        }}
+                    >
+                        <RotateCcw size={18} /> Reactivar Deuda
+                    </button>
+                ) : (
+                    <button
+                        onClick={() => onArchive(debt.id)}
+                        className="btn-secondary"
+                        style={{
+                            height: '52px',
+                            padding: '0 24px',
+                            borderRadius: '16px',
+                            fontWeight: '600',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px',
+                            color: 'var(--text-secondary)',
+                            background: 'rgba(255, 255, 255, 0.05)',
+                            border: '1px solid var(--border-subtle)',
+                            width: debt.status === 'active' ? 'auto' : '100%',
+                            margin: 0,
+                            transition: 'all 0.2s'
+                        }}
+                        title="Archivar Deuda"
+                    >
+                        <Archive size={18} />
+                        <span className={debt.status === 'active' ? 'hide-mobile' : ''}>Archivar</span>
+                    </button>
+                )}
+            </div>
         </div>
     );
 }
