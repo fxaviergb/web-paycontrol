@@ -7,13 +7,44 @@ export const currentUser = {
     location: 'Madrid, Spain'
 };
 
+export const initialPersons = [
+    {
+        id: 'p_andrea',
+        firstName: 'Andrea',
+        lastName: 'P.',
+        docType: 'CEDULA',
+        docNumber: '0912345678',
+        phone: '+593 991234567',
+        email: 'andrea@example.com'
+    },
+    {
+        id: 'p_marco',
+        firstName: 'Marco',
+        lastName: 'R.',
+        docType: 'CEDULA',
+        docNumber: '0987654321',
+        phone: '+593 998765432',
+        email: 'marco@example.com'
+    },
+    {
+        id: 'p_gimnasio',
+        firstName: 'Gimnasio',
+        lastName: 'Central',
+        docType: 'RUC',
+        docNumber: '1799999999001',
+        phone: '+593 2222222',
+        email: 'info@gym.com'
+    }
+];
+
 export const initialDebts = [
     {
         id: 'd1',
         type: 'borrowed', // I owe money
-        counterparty: 'Andrea P.',
+        personId: 'p_andrea',
+        counterparty: 'Andrea P.', // Keeping for legacy/snapshot
         amount: 150.00,
-        paidAmount: 50.00, // Kept for easy initial render, but should ideally be derived
+        paidAmount: 50.00,
         currency: '$',
         reason: 'Cena en Nobu',
         medium: 'Transferencia',
@@ -28,6 +59,7 @@ export const initialDebts = [
     {
         id: 'd2',
         type: 'lent', // They owe me
+        personId: 'p_marco',
         counterparty: 'Marco R.',
         amount: 320.50,
         paidAmount: 0,
@@ -43,6 +75,7 @@ export const initialDebts = [
     {
         id: 'd3',
         type: 'borrowed',
+        personId: 'p_gimnasio',
         counterparty: 'Gimnasio',
         amount: 45.00,
         paidAmount: 45.00,

@@ -16,9 +16,19 @@ export default function Sidebar({ currentView, onNavigate }) {
                     <LayoutDashboard size={20} />
                     <span>Panel Principal</span>
                 </button>
-                <button className="nav-item">
+                <button
+                    className={`nav-item ${currentView === 'history' ? 'active' : ''}`}
+                    onClick={() => onNavigate('history')}
+                >
                     <Receipt size={20} />
                     <span>Historial</span>
+                </button>
+                <button
+                    className={`nav-item ${currentView === 'persons' ? 'active' : ''}`}
+                    onClick={() => onNavigate('persons')}
+                >
+                    <User size={20} />
+                    <span>Personas</span>
                 </button>
                 <button
                     className={`nav-item ${currentView === 'profile' ? 'active' : ''}`}
