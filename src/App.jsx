@@ -13,7 +13,7 @@ import TopPeersChart from './components/Dashboard/TopPeersChart';
 import PersonFormModal from './components/Modals/PersonFormModal';
 import PersonListModal from './components/Modals/PersonListModal';
 import { currentUser, initialDebts, initialPersons } from './data/mock';
-import { Plus, Menu, UserPlus, Receipt, ArrowUpRight, ArrowDownLeft, Clock, Eye, LayoutDashboard, User, Settings, LogOut } from 'lucide-react';
+import { Plus, Menu, UserPlus, Receipt, ArrowUpRight, ArrowDownLeft, Clock, Eye, Archive, LayoutDashboard, User, Settings, LogOut } from 'lucide-react';
 import './app.css';
 import './components/Dashboard/dashboard.css';
 
@@ -106,6 +106,40 @@ export default function App() {
     }));
   };
 
+  const handleDeletePayment = (debtId, paymentId) => {
+    setDebts(debts.map(d => {
+      if (d.id !== debtId) return d;
+
+      const updatedPayments = (d.payments || []).filter(p => p.id !== paymentId);
+      const newPaidTotal = updatedPayments.reduce((sum, p) => sum + p.amount, 0);
+
+      // Auto-revert status if needed
+      const isSettled = newPaidTotal >= d.amount;
+
+      return {
+        ...d,
+        paidAmount: newPaidTotal,
+        payments: updatedPayments,
+        status: isSettled ? 'settled' : 'active'
+      };
+    }));
+  };
+
+  const handleArchiveDebt = (debtId) => {
+    setDebts(debts.map(d => d.id === debtId ? { ...d, status: 'archived' } : d));
+    setSelectedDebtDetails(null); // Close details after archiving
+  };
+
+  const handleReactivateDebt = (debtId) => {
+    setDebts(debts.map(d => {
+      if (d.id !== debtId) return d;
+      // Recalculate if it should be active or settled based on payments
+      const isSettled = d.paidAmount >= d.amount;
+      return { ...d, status: isSettled ? 'settled' : 'active' };
+    }));
+    setSelectedDebtDetails(null); // Close details after reactivating
+  };
+
   const navigate = (view) => {
     setCurrentView(view);
     setIsMobileMenuOpen(false); // Close mobile menu on navigate
@@ -169,7 +203,7 @@ export default function App() {
               <SummaryCards stats={stats} />
               <div className="dashboard-grid-split">
                 <ActiveDebts
-                  debts={debts}
+                  debts={debts.filter(d => d.status !== 'archived')}
                   onDebtClick={setSelectedDebtDetails}
                   onPayClick={setSelectedDebtToPay}
                   onViewAll={() => setCurrentView('history')}
@@ -199,59 +233,75 @@ export default function App() {
                   <div style={{ textAlign: 'center' }}>ACCIONES</div>
                 </div>
 
-                {debts.map((debt) => (
-                  <div key={debt.id} className="debt-item-minimal debt-grid">
-                    <div className={`debt-icon ${debt.type}`}>
-                      {debt.type === 'lent' ? <ArrowUpRight size={20} /> : <ArrowDownLeft size={20} />}
-                    </div>
-                    <div className="debt-info">
-                      <h4 className="debt-counterparty-name">{debt.counterparty}</h4>
-                      <div className="debt-reason-text">{debt.reason}</div>
-
-                      {/* Ultra-compact Mobile Meta (Sync with ActiveDebts) */}
-                      <div className="show-mobile mobile-meta-compact">
-                        <div className="m-row-stats">
-                          <span className="m-val-total">${debt.amount.toFixed(0)}</span>
-                          <span className="m-dot">•</span>
-                          <span className="m-val-date">{debt.date?.split('T')[0]}</span>
+                {/* Advanced Sorting: Pendiente (Oldest) > Pagado > Archivado */}
+                {[...debts].sort((a, b) => {
+                  const rank = { active: 0, settled: 1, archived: 2 };
+                  if (rank[a.status] !== rank[b.status]) {
+                    return rank[a.status] - rank[b.status];
+                  }
+                  if (a.status === 'active') {
+                    return new Date(a.date) - new Date(b.date); // Oldest first
+                  }
+                  return new Date(b.date) - new Date(a.date); // Newest first for others
+                }).map((debt, index) => (
+                  <div key={debt.id} className="debt-item-minimal fade-in" style={{ animationDelay: `${index * 0.05}s` }}>
+                    <div className="debt-grid">
+                      <div className="debt-icon-container">
+                        <div className={`debt-icon ${debt.type}`}>
+                          {debt.type === 'lent' ? <ArrowUpRight size={20} /> : <ArrowDownLeft size={20} />}
                         </div>
-                        <div style={{ marginTop: '4px' }}>
-                          <div className="m-val-paid" style={{ color: '#10b981', fontSize: '11px', fontWeight: '700' }}>
+                      </div>
+                      <div className="debt-info">
+                        <div className="debt-counterparty-name">{debt.counterparty}</div>
+                        <div className="debt-reason-text">{debt.reason}</div>
+
+                        {/* Mobile Only Meta */}
+                        <div className="show-mobile mobile-meta-compact">
+                          <div className="m-row-stats">
+                            <span className="m-val-total">${debt.amount.toFixed(0)}</span>
+                            <span className="m-dot">•</span>
+                            <span className="m-val-date">{debt.date?.split('T')[0]}</span>
+                          </div>
+                          <div style={{ color: 'var(--color-success)', fontWeight: '700', fontSize: '11px', marginTop: '4px' }}>
                             Pagado: ${debt.paidAmount.toFixed(0)}
                           </div>
                           <div className="m-val-pending">
                             {debt.status === 'active'
                               ? `Pendiente: $${(debt.amount - debt.paidAmount).toFixed(0)}`
-                              : 'Totalmente Pagado ✨'}
+                              : debt.status === 'archived' ? 'Archivado' : 'Totalmente Pagado ✨'}
                           </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="hide-mobile desktop-col-date">
-                      {debt.date?.split('T')[0]}
-                    </div>
-                    <div className="hide-mobile desktop-col-amount">
-                      ${debt.amount.toFixed(2)}
-                    </div>
-                    <div className="hide-mobile desktop-col-paid">
-                      ${debt.paidAmount.toFixed(2)}
-                    </div>
-                    <div className="hide-mobile desktop-col-pending">
-                      ${(debt.amount - debt.paidAmount).toFixed(2)}
-                    </div>
-                    <div className="hide-mobile desktop-col-status">
-                      <span className={`badge ${debt.status === 'active' ? 'warning' : 'success'}`}>
-                        {debt.status === 'active' ? <Clock size={12} /> : null}
-                        {debt.status === 'active' ? ' Pendiente' : ' Pagado'}
-                      </span>
-                    </div>
-                    <div className="debt-actions-area">
-                      {debt.status === 'active' && (
-                        <button className="action-pill-compact" onClick={() => setSelectedDebtToPay(debt)}>Pagar</button>
-                      )}
-                      <button className="action-icon-eye" onClick={() => setSelectedDebtDetails(debt)}>
-                        <Eye size={18} />
-                      </button>
+                      <div className="hide-mobile desktop-col-date">
+                        {debt.date?.split('T')[0]}
+                      </div>
+                      <div className="hide-mobile desktop-col-amount">
+                        ${debt.amount.toFixed(2)}
+                      </div>
+                      <div className="hide-mobile desktop-col-paid">
+                        ${debt.paidAmount.toFixed(2)}
+                      </div>
+                      <div className="hide-mobile desktop-col-pending">
+                        ${(debt.amount - debt.paidAmount).toFixed(2)}
+                      </div>
+                      <div className="hide-mobile desktop-col-status">
+                        <span className={`badge ${debt.status === 'active' ? 'warning' :
+                          debt.status === 'archived' ? 'secondary' : 'success'
+                          }`}>
+                          {debt.status === 'active' ? <Clock size={12} /> :
+                            debt.status === 'archived' ? <Archive size={12} /> : null}
+                          {debt.status === 'active' ? ' Pendiente' :
+                            debt.status === 'archived' ? ' Archivado' : ' Pagado'}
+                        </span>
+                      </div>
+                      <div className="debt-actions-area">
+                        {debt.status === 'active' && (
+                          <button className="action-pill-compact" onClick={() => setSelectedDebtToPay(debt)}>Pagar</button>
+                        )}
+                        <button className="action-icon-eye" onClick={() => setSelectedDebtDetails(debt)}>
+                          <Eye size={18} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -324,15 +374,19 @@ export default function App() {
           onClose={() => setSelectedDebtDetails(null)}
           title="Detalle de Deuda"
         >
-          <DebtDetailsModal
-            isOpen={!!selectedDebtDetails}
-            debt={selectedDebtDetails}
-            onClose={() => setSelectedDebtDetails(null)}
-            onPayClick={() => {
-              setSelectedDebtToPay(selectedDebtDetails);
-              setSelectedDebtDetails(null); // Optional: Close details or keep open? User flow suggestion: close details to focus on pay
-            }}
-          />
+          {selectedDebtDetails && (
+            <DebtDetailsModal
+              onClose={() => setSelectedDebtDetails(null)}
+              debt={debts.find(d => d.id === selectedDebtDetails.id)}
+              onPayClick={() => {
+                setSelectedDebtToPay(selectedDebtDetails);
+                setSelectedDebtDetails(null);
+              }}
+              onArchive={handleArchiveDebt}
+              onReactivate={handleReactivateDebt}
+              onDeletePayment={handleDeletePayment}
+            />
+          )}
         </Modal>
 
         <Modal

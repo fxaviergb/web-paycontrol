@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { initialDebts } from '../../data/mock';
-import { Search } from 'lucide-react';
+import { Search, ChevronDown } from 'lucide-react';
 
 
 export default function DebtFormModal({ isOpen, onClose, onAdd, persons, lastCreatedPerson, onAddPerson }) {
@@ -12,6 +12,8 @@ export default function DebtFormModal({ isOpen, onClose, onAdd, persons, lastCre
         reason: '',
         medium: 'Transferencia',
         evidence: null,
+        observations: '',
+        dueDate: '',
         // Initialize with local simplified ISO format (YYYY-MM-DDTHH:mm)
         date: new Date().toLocaleString('sv').slice(0, 16).replace(' ', 'T')
     });
@@ -19,6 +21,7 @@ export default function DebtFormModal({ isOpen, onClose, onAdd, persons, lastCre
     // Search & Autocomplete State
     const [searchTerm, setSearchTerm] = useState('');
     const [showDropdown, setShowDropdown] = useState(false);
+    const [showOptional, setShowOptional] = useState(false);
     const dropdownRef = useRef(null);
 
     // Auto-select newly created person
@@ -79,9 +82,12 @@ export default function DebtFormModal({ isOpen, onClose, onAdd, persons, lastCre
             counterparty: '',
             amount: '',
             reason: '',
+            observations: '',
+            dueDate: '',
             date: new Date().toLocaleString('sv').slice(0, 16).replace(' ', 'T')
         });
         setSearchTerm('');
+        setShowOptional(false);
         onClose();
     };
 
@@ -188,42 +194,90 @@ export default function DebtFormModal({ isOpen, onClose, onAdd, persons, lastCre
             </div>
 
             <div className="form-group">
-                <label className="form-label">¿Por qué?</label>
+                <label className="form-label">¿Por qué? (Concepto)</label>
                 <input
                     type="text"
                     className="form-input"
                     placeholder="Ej: Cena, Alquiler..."
                     value={formData.reason}
                     onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
+                    required
                 />
             </div>
 
-            <div className="form-row" style={{ display: 'flex', gap: '16px' }}>
-                <div className="form-group" style={{ flex: 1 }}>
-                    <label className="form-label">Medio</label>
-                    <select
-                        className="form-select"
-                        value={formData.medium}
-                        onChange={(e) => setFormData({ ...formData, medium: e.target.value })}
-                    >
-                        <option value="Transferencia">Transferencia</option>
-                        <option value="Efectivo">Efectivo</option>
-                        <option value="Tarjeta">Tarjeta</option>
-                        <option value="Otro">Otro</option>
-                    </select>
-                </div>
-                <div className="form-group" style={{ flex: 1 }}>
-                    <label className="form-label">Evidencia</label>
-                    <label className="form-input" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-muted)', fontSize: '13px' }}>
-                        {formData.evidence ? 'Archivo Adjunto' : 'Adjuntar Foto/PDF'}
-                        <input
-                            type="file"
-                            style={{ display: 'none' }}
-                            onChange={(e) => setFormData({ ...formData, evidence: e.target.files[0] ? e.target.files[0].name : null })}
-                        />
-                    </label>
-                </div>
+            <div style={{ marginBottom: '20px' }}>
+                <button
+                    type="button"
+                    onClick={() => setShowOptional(!showOptional)}
+                    style={{
+                        background: 'none',
+                        border: 'none',
+                        color: 'var(--color-accent)',
+                        fontSize: '14px',
+                        fontWeight: 500,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        padding: 0
+                    }}
+                >
+                    {showOptional ? 'Ocultar detalles adicionales' : 'Agregar detalles adicionales'}
+                    <ChevronDown size={16} style={{ transform: showOptional ? 'rotate(180deg)' : '0deg', transition: 'transform 0.2s' }} />
+                </button>
             </div>
+
+            {showOptional && (
+                <div className="slide-up">
+                    <div className="form-group">
+                        <label className="form-label">Observaciones adicionales</label>
+                        <textarea
+                            className="form-input"
+                            placeholder="Detalles extras, recordatorios, etc..."
+                            style={{ height: '80px', resize: 'none' }}
+                            value={formData.observations}
+                            onChange={(e) => setFormData({ ...formData, observations: e.target.value })}
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label className="form-label">Fecha estimada de devolución</label>
+                        <input
+                            type="date"
+                            className="form-input"
+                            value={formData.dueDate}
+                            onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
+                        />
+                    </div>
+
+                    <div className="form-row" style={{ display: 'flex', gap: '16px' }}>
+                        <div className="form-group" style={{ flex: 1 }}>
+                            <label className="form-label">Medio</label>
+                            <select
+                                className="form-select"
+                                value={formData.medium}
+                                onChange={(e) => setFormData({ ...formData, medium: e.target.value })}
+                            >
+                                <option value="Transferencia">Transferencia</option>
+                                <option value="Efectivo">Efectivo</option>
+                                <option value="Tarjeta">Tarjeta</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                        <div className="form-group" style={{ flex: 1 }}>
+                            <label className="form-label">Evidencia</label>
+                            <label className="form-input" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-muted)', fontSize: '13px' }}>
+                                {formData.evidence ? 'Archivo Adjunto' : 'Adjuntar Foto/PDF'}
+                                <input
+                                    type="file"
+                                    style={{ display: 'none' }}
+                                    onChange={(e) => setFormData({ ...formData, evidence: e.target.files[0] ? e.target.files[0].name : null })}
+                                />
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <button type="submit" className="btn-primary">
                 Crear Registro
