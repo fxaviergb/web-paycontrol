@@ -29,6 +29,7 @@ export default function App() {
   const [isPersonListModalOpen, setIsPersonListModalOpen] = useState(false);
   const [isPersonFormModalOpen, setIsPersonFormModalOpen] = useState(false);
   const [personToEdit, setPersonToEdit] = useState(null);
+  const [debtToEdit, setDebtToEdit] = useState(null);
 
   const [selectedDebtDetails, setSelectedDebtDetails] = useState(null); // For viewing details
   const [selectedDebtToPay, setSelectedDebtToPay] = useState(null); // For paying
@@ -55,6 +56,12 @@ export default function App() {
     setPersons([...persons, newPerson]);
     setLastCreatedPerson(newPerson); // Auto-select trigger
     setIsPersonFormModalOpen(false);
+  };
+
+  const handleEditDebt = (updatedDebt) => {
+    setDebts(debts.map(d => d.id === updatedDebt.id ? updatedDebt : d));
+    setDebtToEdit(null);
+    setIsDebtModalOpen(false);
   };
 
   const handleEditPerson = (updatedPerson) => {
@@ -128,6 +135,12 @@ export default function App() {
   const handleArchiveDebt = (debtId) => {
     setDebts(debts.map(d => d.id === debtId ? { ...d, status: 'archived' } : d));
     setSelectedDebtDetails(null); // Close details after archiving
+  };
+
+  const openEditDebt = (debt) => {
+    setDebtToEdit(debt);
+    setSelectedDebtDetails(null);
+    setIsDebtModalOpen(true);
   };
 
   const handleReactivateDebt = (debtId) => {
@@ -336,14 +349,16 @@ export default function App() {
         >
           <DebtFormModal
             isOpen={isDebtModalOpen}
-            onClose={() => setIsDebtModalOpen(false)}
+            onClose={() => {
+              setIsDebtModalOpen(false);
+              setDebtToEdit(null);
+            }}
             onAdd={handleAddDebt}
+            onEdit={handleEditDebt}
+            debtToEdit={debtToEdit}
             persons={persons} // Pass persons list
             lastCreatedPerson={lastCreatedPerson} // For auto-select
-            onAddPerson={() => {
-              // When adding from debt flow, we still open the modal directly
-              openCreatePerson();
-            }}
+            onAddPerson={openCreatePerson}
           />
         </Modal>
 
@@ -385,6 +400,7 @@ export default function App() {
               onArchive={handleArchiveDebt}
               onReactivate={handleReactivateDebt}
               onDeletePayment={handleDeletePayment}
+              onEditClick={openEditDebt}
             />
           )}
         </Modal>
