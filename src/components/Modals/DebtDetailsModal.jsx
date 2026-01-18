@@ -11,10 +11,11 @@ import {
     Clock,
     Archive,
     RotateCcw,
-    Trash2
+    Trash2,
+    Pencil
 } from 'lucide-react';
 
-export default function DebtDetailsModal({ debt, onClose, onPayClick, onArchive, onReactivate, onDeletePayment }) {
+export default function DebtDetailsModal({ debt, onClose, onPayClick, onArchive, onReactivate, onDeletePayment, onEditClick }) {
     if (!debt) return null;
 
     const remaining = debt.amount - debt.paidAmount;
@@ -312,6 +313,30 @@ export default function DebtDetailsModal({ debt, onClose, onPayClick, onArchive,
                         <span className={debt.status === 'active' ? 'hide-mobile' : ''}>Archivar</span>
                     </button>
                 )}
+
+                {/* Edit Button - Always visible for better UX */}
+                <button
+                    onClick={() => onEditClick(debt)}
+                    className="btn-secondary"
+                    style={{
+                        height: '52px',
+                        padding: '0 20px',
+                        borderRadius: '16px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px',
+                        fontWeight: '600',
+                        color: 'var(--color-accent)',
+                        borderColor: 'rgba(79, 70, 229, 0.3)',
+                        background: 'rgba(79, 70, 229, 0.05)',
+                        margin: 0,
+                        transition: 'all 0.2s'
+                    }}
+                >
+                    <Pencil size={18} />
+                    <span className="hide-mobile">Editar</span>
+                </button>
             </div>
         </div>
     );

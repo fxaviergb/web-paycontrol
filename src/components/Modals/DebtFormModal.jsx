@@ -3,7 +3,7 @@ import { initialDebts } from '../../data/mock';
 import { Search, ChevronDown } from 'lucide-react';
 
 
-export default function DebtFormModal({ isOpen, onClose, onAdd, persons, lastCreatedPerson, onAddPerson }) {
+export default function DebtFormModal({ isOpen, onClose, onAdd, onEdit, debtToEdit, persons, lastCreatedPerson, onAddPerson }) {
     const [formData, setFormData] = useState({
         type: 'lent', // or 'borrowed'
         personId: '',
@@ -31,6 +31,33 @@ export default function DebtFormModal({ isOpen, onClose, onAdd, persons, lastCre
             setSearchTerm(`${lastCreatedPerson.firstName} ${lastCreatedPerson.lastName}`);
         }
     }, [lastCreatedPerson, isOpen]);
+
+    // Populate data when editing
+    useEffect(() => {
+        if (isOpen && debtToEdit) {
+            setFormData({
+                ...debtToEdit,
+                date: debtToEdit.date // Keep original date or format if needed
+            });
+            setSearchTerm(debtToEdit.counterparty || '');
+            setShowOptional(!!(debtToEdit.observations || debtToEdit.dueDate || debtToEdit.medium !== 'Transferencia' || debtToEdit.evidence));
+        } else if (isOpen) {
+            // Reset form for new debt
+            setFormData({
+                type: 'lent',
+                personId: '',
+                counterparty: '',
+                amount: '',
+                reason: '',
+                medium: 'Transferencia',
+                evidence: null,
+                observations: '',
+                dueDate: '',
+                date: new Date().toLocaleString('sv').slice(0, 16).replace(' ', 'T')
+            });
+            setSearchTerm('');
+        }
+    }, [debtToEdit, isOpen]);
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -63,17 +90,36 @@ export default function DebtFormModal({ isOpen, onClose, onAdd, persons, lastCre
         const person = persons.find(p => p.id === formData.personId);
         const counterpartyName = person ? `${person.firstName} ${person.lastName}` : 'Unknown';
 
-        onAdd({
-            ...formData,
-            counterparty: counterpartyName, // Ensuring display compatibility
-            amount: parseFloat(formData.amount),
-            id: Date.now().toString(), // Simple ID generation
-            status: 'active',
-            paidAmount: 0,
-            payments: [],
-            evidence: formData.evidence ? [formData.evidence] : [],
-            currency: '$'
-        });
+        const finalAmount = parseFloat(formData.amount);
+
+        if (debtToEdit) {
+            const newPaidTotal = debtToEdit.paidAmount || 0;
+            const isSettled = newPaidTotal >= finalAmount;
+
+            onEdit({
+                ...formData,
+                id: debtToEdit.id,
+                counterparty: counterpartyName,
+                amount: finalAmount,
+                status: isSettled ? 'settled' : 'active',
+                paidAmount: newPaidTotal,
+                payments: debtToEdit.payments || [],
+                evidence: formData.evidence ? [formData.evidence] : (debtToEdit.evidence || []),
+                currency: debtToEdit.currency || '$'
+            });
+        } else {
+            onAdd({
+                ...formData,
+                id: Date.now().toString(),
+                counterparty: counterpartyName,
+                amount: finalAmount,
+                paidAmount: 0,
+                status: 'active',
+                payments: [],
+                evidence: formData.evidence ? [formData.evidence] : [],
+                currency: '$'
+            });
+        }
 
         // Reset and close
         setFormData({
@@ -280,7 +326,7 @@ export default function DebtFormModal({ isOpen, onClose, onAdd, persons, lastCre
             )}
 
             <button type="submit" className="btn-primary">
-                Crear Registro
+                {debtToEdit ? 'Guardar Cambios' : 'Crear Registro'}
             </button>
         </form>
     );
