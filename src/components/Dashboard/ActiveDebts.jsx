@@ -47,12 +47,17 @@ export default function ActiveDebts({ debts, onDebtClick, onPayClick, onViewAll 
                                         {/* Ultra-compact Mobile Meta (User preferred) */}
                                         <div className="show-mobile mobile-meta-compact">
                                             <div className="m-row-stats">
-                                                <span className="m-val-total">${debt.amount.toFixed(2)}</span>
+                                                <span className="m-val-total">${debt.amount.toFixed(0)}</span>
                                                 <span className="m-dot">•</span>
                                                 <span className="m-val-date">{debt.date?.split('T')[0]}</span>
                                             </div>
-                                            <div className="m-val-pending">
-                                                Pendiente: ${pendingAmount.toFixed(2)}
+                                            <div style={{ marginTop: '4px' }}>
+                                                <div className="m-val-paid" style={{ color: '#10b981', fontSize: '11px', fontWeight: '700' }}>
+                                                    Pagado: ${debt.paidAmount.toFixed(0)}
+                                                </div>
+                                                <div className="m-val-pending">
+                                                    Pendiente: ${pendingAmount.toFixed(0)}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

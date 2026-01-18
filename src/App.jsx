@@ -211,14 +211,19 @@ export default function App() {
                       {/* Ultra-compact Mobile Meta (Sync with ActiveDebts) */}
                       <div className="show-mobile mobile-meta-compact">
                         <div className="m-row-stats">
-                          <span className="m-val-total">${debt.amount.toFixed(2)}</span>
+                          <span className="m-val-total">${debt.amount.toFixed(0)}</span>
                           <span className="m-dot">•</span>
                           <span className="m-val-date">{debt.date?.split('T')[0]}</span>
                         </div>
-                        <div className="m-val-pending">
-                          {debt.status === 'active'
-                            ? `Pendiente: $${(debt.amount - debt.paidAmount).toFixed(2)}`
-                            : 'Totalmente Pagado ✨'}
+                        <div style={{ marginTop: '4px' }}>
+                          <div className="m-val-paid" style={{ color: '#10b981', fontSize: '11px', fontWeight: '700' }}>
+                            Pagado: ${debt.paidAmount.toFixed(0)}
+                          </div>
+                          <div className="m-val-pending">
+                            {debt.status === 'active'
+                              ? `Pendiente: $${(debt.amount - debt.paidAmount).toFixed(0)}`
+                              : 'Totalmente Pagado ✨'}
+                          </div>
                         </div>
                       </div>
                     </div>

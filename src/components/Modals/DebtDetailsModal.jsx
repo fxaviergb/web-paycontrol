@@ -128,7 +128,7 @@ export default function DebtDetailsModal({ isOpen, onClose, debt, onPayClick }) 
                         <Wallet size={20} />
                     </div>
                     <div style={{ textAlign: 'center' }}>
-                        <div style={{ fontSize: '11px', fontWeight: '700', color: '#fcd34d', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '2px' }}>Restante</div>
+                        <div style={{ fontSize: '11px', fontWeight: '700', color: '#fcd34d', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '2px' }}>Pendiente</div>
                         <div style={{ fontSize: '22px', fontWeight: '900', color: '#fbbf24' }}>${remaining.toFixed(0)}</div>
                     </div>
                 </div>
