@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { Mail, Lock, LogIn, UserPlus, CreditCard, ShieldCheck, PieChart } from 'lucide-react';
+import { Mail, Lock, LogIn, UserPlus, CreditCard, ShieldCheck, PieChart, Eye, EyeOff } from 'lucide-react';
 import './auth.css';
 
 export default function LoginView() {
@@ -8,6 +8,8 @@ export default function LoginView() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
@@ -132,13 +134,21 @@ export default function LoginView() {
                             <div className="input-wrapper">
                                 <Lock className="input-icon" size={18} />
                                 <input
-                                    type="password"
+                                    type={showPassword ? "text" : "password"}
                                     className="form-input"
                                     placeholder="••••••••"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
                                 />
+                                <button
+                                    type="button"
+                                    className="password-toggle"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    tabIndex="-1"
+                                >
+                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                </button>
                             </div>
                         </div>
                     )}
@@ -149,13 +159,21 @@ export default function LoginView() {
                             <div className="input-wrapper">
                                 <Lock className="input-icon" size={18} />
                                 <input
-                                    type="password"
+                                    type={showNewPassword ? "text" : "password"}
                                     className="form-input"
                                     placeholder="Nueva contraseña"
                                     value={newPassword}
                                     onChange={(e) => setNewPassword(e.target.value)}
                                     required
                                 />
+                                <button
+                                    type="button"
+                                    className="password-toggle"
+                                    onClick={() => setShowNewPassword(!showNewPassword)}
+                                    tabIndex="-1"
+                                >
+                                    {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                </button>
                             </div>
                         </div>
                     )}
