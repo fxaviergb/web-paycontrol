@@ -3,10 +3,14 @@ import { useState, useEffect } from 'react';
 export default function PaymentModal({ isOpen, onClose, debt, onPay }) {
     const [amount, setAmount] = useState('');
     const [date, setDate] = useState(new Date().toLocaleString('sv').slice(0, 16).replace(' ', 'T'));
+    const [medium, setMedium] = useState('Transferencia');
+    const [note, setNote] = useState('');
 
     useEffect(() => {
         if (isOpen) {
             setAmount('');
+            setMedium('Transferencia');
+            setNote('');
             setDate(new Date().toLocaleString('sv').slice(0, 16).replace(' ', 'T'));
         }
     }, [isOpen]);
@@ -19,16 +23,12 @@ export default function PaymentModal({ isOpen, onClose, debt, onPay }) {
         e.preventDefault();
         if (!amount || parseFloat(amount) <= 0) return;
 
-        const medium = document.getElementById('payment-medium').value;
-        const note = document.getElementById('payment-note').value;
-        const evidenceFile = document.getElementById('payment-evidence').files[0];
-
         onPay(debt.id, {
             amount: parseFloat(amount),
             medium,
             note,
             date,
-            evidence: evidenceFile ? evidenceFile.name : null
+            evidence: null
         });
         onClose();
     };
@@ -96,7 +96,11 @@ export default function PaymentModal({ isOpen, onClose, debt, onPay }) {
 
             <div className="form-group">
                 <label className="form-label">Medio de Pago</label>
-                <select className="form-select" id="payment-medium">
+                <select
+                    className="form-select"
+                    value={medium}
+                    onChange={(e) => setMedium(e.target.value)}
+                >
                     <option value="Transferencia">Transferencia</option>
                     <option value="Efectivo">Efectivo</option>
                     <option value="Tarjeta">Tarjeta</option>
@@ -106,7 +110,13 @@ export default function PaymentModal({ isOpen, onClose, debt, onPay }) {
 
             <div className="form-group">
                 <label className="form-label">Observaciones</label>
-                <input type="text" className="form-input" placeholder="Ej: Pago parcial..." id="payment-note" />
+                <input
+                    type="text"
+                    className="form-input"
+                    placeholder="Ej: Pago parcial..."
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                />
             </div>
 
 

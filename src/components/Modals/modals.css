@@ -13,11 +13,15 @@
     z-index: 1000;
     padding: 16px;
     /* Space around the modal on mobile */
+    overflow-y: auto;
+    /* Allow overlay to scroll if modal is taller than viewport */
 }
 
 /* Class to be added to body to prevent scroll */
 body.modal-open {
-    overflow: hidden;
+    overflow: hidden !important;
+    position: fixed;
+    width: 100%;
     height: 100vh;
 }
 
@@ -33,6 +37,8 @@ body.modal-open {
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    margin: auto;
+    /* Center when overlay scrolls */
 }
 
 .modal-header {
@@ -41,6 +47,8 @@ body.modal-open {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-shrink: 0;
+    /* Prevent header from shrinking */
 }
 
 .modal-header h3 {
@@ -67,9 +75,12 @@ body.modal-open {
 .modal-content {
     padding: 16px 20px;
     overflow-y: auto;
+    overflow-x: hidden;
     /* Content should scroll if too tall */
     flex: 1;
     /* Take up remaining space */
+    -webkit-overflow-scrolling: touch;
+    /* Smooth scrolling on iOS */
 }
 
 /* Animations */
