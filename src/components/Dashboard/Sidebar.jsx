@@ -1,11 +1,18 @@
-import { LayoutDashboard, Receipt, Settings, User, LogOut } from 'lucide-react';
+import { LayoutDashboard, Receipt, Settings, User, LogOut, CreditCard, Menu, X } from 'lucide-react';
 
-export default function Sidebar({ currentView, onNavigate, onLogout }) {
+export default function Sidebar({ currentView, onNavigate, onLogout, isOpen, onToggle }) {
     return (
         <aside className="sidebar">
             <div className="logo-area">
-                <div className="logo-icon">C</div>
-                <h1 className="logo-text">PayControl</h1>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div className="logo-icon">
+                        <CreditCard size={18} strokeWidth={2.5} />
+                    </div>
+                    <h1 className="logo-text">PayControl</h1>
+                </div>
+                <button className="sidebar-toggle-internal" onClick={onToggle}>
+                    {isOpen ? <X size={20} /> : <Menu size={20} />}
+                </button>
             </div>
 
             <nav className="nav-menu">
