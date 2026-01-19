@@ -1,6 +1,6 @@
 import { LayoutDashboard, Receipt, Settings, User, LogOut } from 'lucide-react';
 
-export default function Sidebar({ currentView, onNavigate }) {
+export default function Sidebar({ currentView, onNavigate, onLogout }) {
     return (
         <aside className="sidebar">
             <div className="logo-area">
@@ -44,7 +44,7 @@ export default function Sidebar({ currentView, onNavigate }) {
             </nav>
 
             <div className="sidebar-footer">
-                <button className="nav-item logout">
+                <button className="nav-item logout" onClick={onLogout}>
                     <LogOut size={20} />
                     <span>Cerrar Sesión</span>
                 </button>
