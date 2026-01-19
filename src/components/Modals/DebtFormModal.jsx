@@ -187,7 +187,7 @@ export default function DebtFormModal({ isOpen, onClose, onAdd, onEdit, debtToEd
                             }}
                             required
                         />
-                        <Search size={16} style={{ position: 'absolute', right: '12px', top: '12px', color: 'var(--text-muted)' }} />
+                        <Search size={16} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
 
                         {showDropdown && (
                             <div className="searchable-dropdown">
@@ -225,12 +225,12 @@ export default function DebtFormModal({ isOpen, onClose, onAdd, onEdit, debtToEd
             <div className="form-group">
                 <label className="form-label">¿Cuánto?</label>
                 <div style={{ position: 'relative' }}>
-                    <span style={{ position: 'absolute', left: '12px', top: '10px', color: 'var(--text-muted)' }}>$</span>
+                    <span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}>$</span>
                     <input
                         type="number"
                         className="form-input"
                         placeholder="0.00"
-                        style={{ paddingLeft: '32px' }}
+                        style={{ paddingLeft: '24px' }}
                         value={formData.amount}
                         onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                         required
@@ -296,31 +296,18 @@ export default function DebtFormModal({ isOpen, onClose, onAdd, onEdit, debtToEd
                         />
                     </div>
 
-                    <div className="form-row" style={{ display: 'flex', gap: '16px' }}>
-                        <div className="form-group" style={{ flex: 1 }}>
-                            <label className="form-label">Medio</label>
-                            <select
-                                className="form-select"
-                                value={formData.medium}
-                                onChange={(e) => setFormData({ ...formData, medium: e.target.value })}
-                            >
-                                <option value="Transferencia">Transferencia</option>
-                                <option value="Efectivo">Efectivo</option>
-                                <option value="Tarjeta">Tarjeta</option>
-                                <option value="Otro">Otro</option>
-                            </select>
-                        </div>
-                        <div className="form-group" style={{ flex: 1 }}>
-                            <label className="form-label">Evidencia</label>
-                            <label className="form-input" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-muted)', fontSize: '13px' }}>
-                                {formData.evidence ? 'Archivo Adjunto' : 'Adjuntar Foto/PDF'}
-                                <input
-                                    type="file"
-                                    style={{ display: 'none' }}
-                                    onChange={(e) => setFormData({ ...formData, evidence: e.target.files[0] ? e.target.files[0].name : null })}
-                                />
-                            </label>
-                        </div>
+                    <div className="form-group">
+                        <label className="form-label">Medio</label>
+                        <select
+                            className="form-select"
+                            value={formData.medium}
+                            onChange={(e) => setFormData({ ...formData, medium: e.target.value })}
+                        >
+                            <option value="Transferencia">Transferencia</option>
+                            <option value="Efectivo">Efectivo</option>
+                            <option value="Tarjeta">Tarjeta</option>
+                            <option value="Otro">Otro</option>
+                        </select>
                     </div>
                 </div>
             )}

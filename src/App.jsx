@@ -38,7 +38,7 @@ function MainAppContent() {
 
   const [selectedDebtDetails, setSelectedDebtDetails] = useState(null); // For viewing details
   const [selectedDebtToPay, setSelectedDebtToPay] = useState(null); // For paying
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 1024);
 
   // Load Initial Data
   useEffect(() => {
@@ -234,7 +234,9 @@ function MainAppContent() {
 
   const navigate = (view) => {
     setCurrentView(view);
-    setIsMobileMenuOpen(false); // Close mobile menu on navigate
+    if (window.innerWidth <= 1024) {
+      setIsSidebarOpen(false); // Close mobile menu on navigate if on mobile/tablet
+    }
   };
 
   const calculateStats = useMemo(() => {
@@ -255,10 +257,16 @@ function MainAppContent() {
   if (!user || isPasswordRecovery) return <LoginView />;
 
   return (
-    <div className="app-container">
-      <div className={`sidebar-wrapper ${isMobileMenuOpen ? 'open' : ''}`}>
-        <Sidebar currentView={currentView} onNavigate={navigate} onLogout={signOut} />
-        <div className="sidebar-overlay" onClick={() => setIsMobileMenuOpen(false)}></div>
+    <div className={`app-container ${isSidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
+      <div className="sidebar-wrapper">
+        <Sidebar
+          currentView={currentView}
+          onNavigate={navigate}
+          onLogout={signOut}
+          isOpen={isSidebarOpen}
+          onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
+        />
+        <div className="sidebar-overlay" onClick={() => setIsSidebarOpen(false)}></div>
       </div>
 
       <main className="main-content">
@@ -271,9 +279,11 @@ function MainAppContent() {
           <>
             <header className="top-bar">
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <button className="menu-btn" onClick={() => setIsMobileMenuOpen(true)}>
-                  <Menu size={24} />
-                </button>
+                {!isSidebarOpen && (
+                  <button className="floating-menu-btn" onClick={() => setIsSidebarOpen(true)}>
+                    <Menu size={20} />
+                  </button>
+                )}
                 <div>
                   <h2 className="page-title">{getPageTitle()}</h2>
                   <p className="page-subtitle">Hola de nuevo, {userProfile.firstName} ✨</p>
@@ -426,7 +436,11 @@ function MainAppContent() {
               )}
 
               {currentView === 'profile' && (
-                <ProfileSettings profile={userProfile} onUpdateProfile={handleUpdateProfile} />
+                <ProfileSettings
+                  profile={userProfile}
+                  onUpdateProfile={handleUpdateProfile}
+                  onLogout={signOut}
+                />
               )}
             </div>
 

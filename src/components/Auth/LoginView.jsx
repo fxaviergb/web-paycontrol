@@ -11,6 +11,7 @@ export default function LoginView() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
+    const [info, setInfo] = useState(null);
     const { signIn, signUp, resetPassword, updatePassword, isPasswordRecovery, setIsPasswordRecovery } = useAuth();
     const isMock = (import.meta.env.VITE_DATA_PROVIDER || 'mock') === 'mock';
 
@@ -37,6 +38,7 @@ export default function LoginView() {
         setLoading(true);
         setError(null);
         setSuccess(null);
+        setInfo(null);
         try {
             if (view === 'login') {
                 await signIn(email, password);
@@ -88,9 +90,9 @@ export default function LoginView() {
                     )}
                 </div>
 
-                {(error || success) && (
-                    <div className={`auth-alert ${success ? 'success' : 'error'}`}>
-                        {error || success}
+                {(error || success || info) && (
+                    <div className={`auth-alert ${success ? 'success' : error ? 'error' : 'info'}`}>
+                        {error || success || info}
                     </div>
                 )}
 
@@ -181,13 +183,17 @@ export default function LoginView() {
 
                 <div className="auth-footer">
                     {view === 'login' && (
-                        <button className="auth-toggle" onClick={() => setView('signup')}>
+                        <button
+                            type="button"
+                            className="auth-toggle"
+                            onClick={() => {
+                                setError(null);
+                                setSuccess(null);
+                                setInfo('Envía un mensaje a fxaviergb@gmail.com solicitando acceso a PayControl.');
+                                setTimeout(() => setInfo(null), 5000);
+                            }}
+                        >
                             ¿No tienes cuenta? Regístrate
-                        </button>
-                    )}
-                    {view === 'signup' && (
-                        <button className="auth-toggle" onClick={() => setView('login')}>
-                            ¿Ya tienes cuenta? Inicia sesión
                         </button>
                     )}
                     {(view === 'forgot' || view === 'update') && (

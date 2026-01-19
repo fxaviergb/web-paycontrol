@@ -60,12 +60,12 @@ export default function PaymentModal({ isOpen, onClose, debt, onPay }) {
             <div className="form-group">
                 <label className="form-label">Monto del Pago</label>
                 <div style={{ position: 'relative' }}>
-                    <span style={{ position: 'absolute', left: '12px', top: '10px', color: 'var(--text-muted)' }}>$</span>
+                    <span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}>$</span>
                     <input
                         type="number"
                         className="form-input"
                         placeholder="0.00"
-                        style={{ paddingLeft: '32px', fontSize: '18px' }}
+                        style={{ paddingLeft: '24px', fontSize: '18px' }}
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
                         max={remaining}
@@ -89,7 +89,7 @@ export default function PaymentModal({ isOpen, onClose, debt, onPay }) {
                         style={{ background: 'var(--bg-surface-hover)', cursor: 'pointer', border: 'none', color: 'var(--text-secondary)' }}
                         onClick={() => setAmount(remaining.toFixed(2))}
                     >
-                        Full Amount
+                        Todo
                     </button>
                 </div>
             </div>
@@ -109,10 +109,6 @@ export default function PaymentModal({ isOpen, onClose, debt, onPay }) {
                 <input type="text" className="form-input" placeholder="Ej: Pago parcial..." id="payment-note" />
             </div>
 
-            <div className="form-group">
-                <label className="form-label">Comprobante (Opcional)</label>
-                <input type="file" className="form-input" style={{ fontSize: '13px' }} id="payment-evidence" />
-            </div>
 
             <button type="submit" className="btn-primary" style={{ backgroundColor: 'var(--color-success)' }}>
                 Confirmar Pago

@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Camera, Check, AlertCircle } from 'lucide-react';
+import { Camera, Check, AlertCircle, LogOut } from 'lucide-react';
 import './profile.css';
 
-export default function ProfileSettings({ profile, onUpdateProfile }) {
+export default function ProfileSettings({ profile, onUpdateProfile, onLogout }) {
     const [formData, setFormData] = useState({
         firstName: profile?.firstName || '',
         lastName: profile?.lastName || '',
@@ -122,6 +122,18 @@ export default function ProfileSettings({ profile, onUpdateProfile }) {
                     <div className="stat-row">
                         <span>Plan Actual</span>
                         <strong style={{ color: 'var(--color-premium)' }}>Premium Gold</strong>
+                    </div>
+
+                    <div className="profile-security-actions" style={{ marginTop: '32px', borderTop: '1px solid var(--border-subtle)', paddingTop: '24px' }}>
+                        <button
+                            type="button"
+                            className="btn-secondary logout-profile-btn"
+                            onClick={onLogout}
+                            style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: 'var(--color-danger)' }}
+                        >
+                            <LogOut size={18} />
+                            Cerrar Sesión
+                        </button>
                     </div>
                 </div>
             </div>

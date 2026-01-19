@@ -11,6 +11,14 @@
     align-items: center;
     justify-content: center;
     z-index: 1000;
+    padding: 16px;
+    /* Space around the modal on mobile */
+}
+
+/* Class to be added to body to prevent scroll */
+body.modal-open {
+    overflow: hidden;
+    height: 100vh;
 }
 
 .modal-container {
@@ -19,12 +27,16 @@
     border-radius: var(--radius-card);
     width: 100%;
     max-width: 500px;
+    max-height: calc(100vh - 32px);
+    /* Ensure it fits in viewport */
     box-shadow: var(--shadow-float);
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .modal-header {
-    padding: 16px 24px;
+    padding: 12px 20px;
     border-bottom: 1px solid var(--border-subtle);
     display: flex;
     justify-content: space-between;
@@ -53,7 +65,11 @@
 }
 
 .modal-content {
-    padding: 24px;
+    padding: 16px 20px;
+    overflow-y: auto;
+    /* Content should scroll if too tall */
+    flex: 1;
+    /* Take up remaining space */
 }
 
 /* Animations */
@@ -75,7 +91,7 @@
 
 /* Form Styles */
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 14px;
 }
 
 .form-label {
@@ -89,13 +105,13 @@
 .form-input,
 .form-select {
     width: 100%;
-    padding: 10px 14px;
+    padding: 7px 10px;
     background-color: var(--bg-primary);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-input);
     color: var(--text-primary);
     font-family: inherit;
-    font-size: 14px;
+    font-size: 13.5px;
     transition: border-color 0.2s;
 }
 
