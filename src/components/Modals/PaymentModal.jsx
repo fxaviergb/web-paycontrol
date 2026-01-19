@@ -2,18 +2,27 @@ import { useState, useEffect } from 'react';
 
 export default function PaymentModal({ isOpen, onClose, debt, onPay }) {
     const [amount, setAmount] = useState('');
-    const [date, setDate] = useState(new Date().toLocaleString('sv').slice(0, 16).replace(' ', 'T'));
+    const [dateOnly, setDateOnly] = useState(new Date().toISOString().split('T')[0]);
+    const [timeOnly, setTimeOnly] = useState('00:00');
     const [medium, setMedium] = useState('Transferencia');
     const [note, setNote] = useState('');
 
     useEffect(() => {
         if (isOpen) {
             setAmount('');
+            setDateOnly(new Date().toISOString().split('T')[0]);
+            setTimeOnly('00:00');
             setMedium('Transferencia');
             setNote('');
-            setDate(new Date().toLocaleString('sv').slice(0, 16).replace(' ', 'T'));
         }
     }, [isOpen]);
+
+    // Helper to merge date and time into ISO string
+    const mergeDateTime = (date, time) => {
+        if (!date) return new Date().toISOString();
+        const timeValue = time || '00:00';
+        return new Date(`${date}T${timeValue}:00`).toISOString();
+    };
 
     if (!debt) return null;
 
@@ -27,7 +36,7 @@ export default function PaymentModal({ isOpen, onClose, debt, onPay }) {
             amount: parseFloat(amount),
             medium,
             note,
-            date,
+            date: mergeDateTime(dateOnly, timeOnly),
             evidence: null
         });
         onClose();
@@ -46,15 +55,26 @@ export default function PaymentModal({ isOpen, onClose, debt, onPay }) {
                 </h2>
             </div>
 
-            <div className="form-group">
-                <label className="form-label">Fecha y Hora</label>
-                <input
-                    type="datetime-local"
-                    className="form-input"
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}
-                    required
-                />
+            <div style={{ display: 'flex', gap: '12px', marginBottom: '14px' }}>
+                <div style={{ flex: '2' }}>
+                    <label className="form-label">Fecha</label>
+                    <input
+                        type="date"
+                        className="form-input"
+                        value={dateOnly}
+                        onChange={(e) => setDateOnly(e.target.value)}
+                        required
+                    />
+                </div>
+                <div style={{ flex: '1' }}>
+                    <label className="form-label">Hora</label>
+                    <input
+                        type="time"
+                        className="form-input"
+                        value={timeOnly}
+                        onChange={(e) => setTimeOnly(e.target.value)}
+                    />
+                </div>
             </div>
 
             <div className="form-group">
