@@ -14,9 +14,12 @@ export default function DebtFormModal({ isOpen, onClose, onAdd, onEdit, debtToEd
         evidence: null,
         observations: '',
         dueDate: '',
-        // Initialize with local simplified ISO format (YYYY-MM-DDTHH:mm)
-        date: new Date().toLocaleString('sv').slice(0, 16).replace(' ', 'T')
+        date: new Date().toISOString() // Store as ISO string
     });
+
+    // Separate UI state for date and time
+    const [dateOnly, setDateOnly] = useState(new Date().toISOString().split('T')[0]);
+    const [timeOnly, setTimeOnly] = useState('00:00');
 
     // Search & Autocomplete State
     const [searchTerm, setSearchTerm] = useState('');
@@ -32,24 +35,39 @@ export default function DebtFormModal({ isOpen, onClose, onAdd, onEdit, debtToEd
         }
     }, [lastCreatedPerson, isOpen]);
 
-    // Helper to format date for datetime-local input (YYYY-MM-DDTHH:mm)
-    const formatDateForInput = (dateValue) => {
-        if (!dateValue) return '';
-        const d = new Date(dateValue);
-        return d.toLocaleString('sv').slice(0, 16).replace(' ', 'T');
+    // Helper to split datetime into date and time
+    const splitDateTime = (isoString) => {
+        if (!isoString) return { date: '', time: '' };
+        const dt = new Date(isoString);
+        const date = dt.toISOString().split('T')[0];
+        const time = dt.toTimeString().slice(0, 5);
+        return { date, time };
+    };
+
+    // Helper to merge date and time into ISO string
+    const mergeDateTime = (date, time) => {
+        if (!date) return new Date().toISOString();
+        const timeValue = time || '00:00';
+        return new Date(`${date}T${timeValue}:00`).toISOString();
     };
 
     // Populate data when editing
     useEffect(() => {
         if (isOpen && debtToEdit) {
+            const { date, time } = splitDateTime(debtToEdit.date);
+            setDateOnly(date);
+            setTimeOnly(time || '00:00');
             setFormData({
                 ...debtToEdit,
-                date: formatDateForInput(debtToEdit.date)
+                date: debtToEdit.date // Keep original ISO format
             });
             setSearchTerm(debtToEdit.counterparty || '');
             setShowOptional(!!(debtToEdit.observations || debtToEdit.dueDate || debtToEdit.medium !== 'Transferencia' || debtToEdit.evidence));
         } else if (isOpen) {
             // Reset form for new debt
+            const now = new Date();
+            setDateOnly(now.toISOString().split('T')[0]);
+            setTimeOnly('00:00');
             setFormData({
                 type: 'lent',
                 personId: '',
@@ -60,7 +78,7 @@ export default function DebtFormModal({ isOpen, onClose, onAdd, onEdit, debtToEd
                 evidence: null,
                 observations: '',
                 dueDate: '',
-                date: formatDateForInput(new Date())
+                date: now.toISOString()
             });
             setSearchTerm('');
         }
@@ -114,7 +132,8 @@ export default function DebtFormModal({ isOpen, onClose, onAdd, onEdit, debtToEd
                 paidAmount: newPaidTotal,
                 payments: debtToEdit.payments || [],
                 evidence: formData.evidence ? [formData.evidence] : (debtToEdit.evidence || []),
-                currency: debtToEdit.currency || '$'
+                currency: debtToEdit.currency || '$',
+                date: mergeDateTime(dateOnly, timeOnly)
             });
         } else {
             onAdd({
@@ -126,11 +145,15 @@ export default function DebtFormModal({ isOpen, onClose, onAdd, onEdit, debtToEd
                 status: 'active',
                 payments: [],
                 evidence: formData.evidence ? [formData.evidence] : [],
-                currency: '$'
+                currency: '$',
+                date: mergeDateTime(dateOnly, timeOnly)
             });
         }
 
         // Reset and close
+        const now = new Date();
+        setDateOnly(now.toISOString().split('T')[0]);
+        setTimeOnly('00:00');
         setFormData({
             type: 'lent',
             personId: '',
@@ -168,15 +191,26 @@ export default function DebtFormModal({ isOpen, onClose, onAdd, onEdit, debtToEd
                 </div>
             </div>
 
-            <div className="form-group">
-                <label className="form-label">Fecha y Hora</label>
-                <input
-                    type="datetime-local"
-                    className="form-input"
-                    value={formData.date}
-                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                    required
-                />
+            <div style={{ display: 'flex', gap: '12px', marginBottom: '14px' }}>
+                <div style={{ flex: '2' }}>
+                    <label className="form-label">Fecha</label>
+                    <input
+                        type="date"
+                        className="form-input"
+                        value={dateOnly}
+                        onChange={(e) => setDateOnly(e.target.value)}
+                        required
+                    />
+                </div>
+                <div style={{ flex: '1' }}>
+                    <label className="form-label">Hora</label>
+                    <input
+                        type="time"
+                        className="form-input"
+                        value={timeOnly}
+                        onChange={(e) => setTimeOnly(e.target.value)}
+                    />
+                </div>
             </div>
 
             <div className="form-group">
