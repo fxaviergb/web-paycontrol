@@ -117,16 +117,35 @@ class SupabaseService {
             .from('debts')
             .select(`
                 *,
-                persons (id, first_name, last_name),
+                persons (id, first_name, last_name, doc_type, doc_number),
                 payments (*)
             `)
             .order('date', { ascending: false });
         if (error) throw error;
 
-        // Map counterparty for UI compatibility
         return data.map(d => ({
-            ...d,
-            counterparty: d.persons ? `${d.persons.first_name} ${d.persons.last_name}` : 'Unknown'
+            id: d.id,
+            type: d.type,
+            personId: d.person_id,
+            amount: d.amount,
+            paidAmount: d.paid_amount,
+            currency: d.currency,
+            reason: d.reason,
+            medium: d.medium,
+            status: d.status,
+            dueDate: d.due_date,
+            date: d.date,
+            observations: d.observations,
+            evidence: d.evidence,
+            counterparty: d.persons ? `${d.persons.first_name} ${d.persons.last_name}` : 'Unknown',
+            person: d.persons ? {
+                id: d.persons.id,
+                firstName: d.persons.first_name,
+                lastName: d.persons.last_name,
+                docType: d.persons.doc_type,
+                docNumber: d.persons.doc_number
+            } : null,
+            payments: d.payments || []
         }));
     }
 
@@ -136,71 +155,188 @@ class SupabaseService {
             .select('*')
             .order('first_name');
         if (error) throw error;
-        return data;
+        return data.map(p => ({
+            id: p.id,
+            firstName: p.first_name,
+            lastName: p.last_name,
+            docType: p.doc_type,
+            docNumber: p.doc_number,
+            phone: p.phone,
+            email: p.email
+        }));
     }
 
     async addDebt(debt) {
         const { data, error } = await supabase
             .from('debts')
             .insert([{
-                ...debt,
-                user_id: (await supabase.auth.getUser()).data.user?.id || MOCK_USER_ID
+                user_id: (await supabase.auth.getUser()).data.user?.id || MOCK_USER_ID,
+                person_id: debt.personId,
+                type: debt.type,
+                amount: debt.amount,
+                paid_amount: debt.paidAmount || 0,
+                currency: debt.currency || '$',
+                reason: debt.reason,
+                medium: debt.medium,
+                status: debt.status || 'active',
+                due_date: debt.dueDate || null,
+                date: debt.date || new Date().toISOString(),
+                observations: debt.observations || '',
+                evidence: debt.evidence || null
             }])
-            .select()
+            .select(`
+                *,
+                persons (id, first_name, last_name, doc_type, doc_number),
+                payments (*)
+            `)
             .single();
         if (error) throw error;
-        return data;
+
+        return {
+            id: data.id,
+            type: data.type,
+            personId: data.person_id,
+            amount: data.amount,
+            paidAmount: data.paid_amount,
+            currency: data.currency,
+            reason: data.reason,
+            medium: data.medium,
+            status: data.status,
+            dueDate: data.due_date,
+            date: data.date,
+            observations: data.observations,
+            evidence: data.evidence,
+            counterparty: data.persons ? `${data.persons.first_name} ${data.persons.last_name}` : 'Unknown',
+            person: data.persons ? {
+                id: data.persons.id,
+                firstName: data.persons.first_name,
+                lastName: data.persons.last_name,
+                docType: data.persons.doc_type,
+                docNumber: data.persons.doc_number
+            } : null,
+            payments: data.payments || []
+        };
     }
 
     async updateDebt(debt) {
         const { data, error } = await supabase
             .from('debts')
-            .update(debt)
+            .update({
+                person_id: debt.personId,
+                type: debt.type,
+                amount: debt.amount,
+                paid_amount: debt.paidAmount,
+                currency: debt.currency,
+                reason: debt.reason,
+                medium: debt.medium,
+                status: debt.status,
+                due_date: debt.dueDate,
+                date: debt.date,
+                observations: debt.observations,
+                evidence: debt.evidence
+            })
             .eq('id', debt.id)
-            .select()
+            .select(`
+                *,
+                persons (id, first_name, last_name, doc_type, doc_number),
+                payments (*)
+            `)
             .single();
         if (error) throw error;
-        return data;
+
+        return {
+            id: data.id,
+            type: data.type,
+            personId: data.person_id,
+            amount: data.amount,
+            paidAmount: data.paid_amount,
+            currency: data.currency,
+            reason: data.reason,
+            medium: data.medium,
+            status: data.status,
+            dueDate: data.due_date,
+            date: data.date,
+            observations: data.observations,
+            evidence: data.evidence,
+            counterparty: data.persons ? `${data.persons.first_name} ${data.persons.last_name}` : 'Unknown',
+            person: data.persons ? {
+                id: data.persons.id,
+                firstName: data.persons.first_name,
+                lastName: data.persons.last_name,
+                docType: data.persons.doc_type,
+                docNumber: data.persons.doc_number
+            } : null,
+            payments: data.payments || []
+        };
     }
 
     async addPerson(person) {
         const { data, error } = await supabase
             .from('persons')
             .insert([{
-                ...person,
+                first_name: person.firstName,
+                last_name: person.lastName,
+                doc_type: person.docType,
+                doc_number: person.docNumber,
+                phone: person.phone,
+                email: person.email,
                 user_id: (await supabase.auth.getUser()).data.user?.id || MOCK_USER_ID
             }])
             .select()
             .single();
         if (error) throw error;
-        return data;
+        return {
+            id: data.id,
+            firstName: data.first_name,
+            lastName: data.last_name,
+            docType: data.doc_type,
+            docNumber: data.doc_number,
+            phone: data.phone,
+            email: data.email
+        };
     }
 
     async updatePerson(person) {
         const { data, error } = await supabase
             .from('persons')
-            .update(person)
+            .update({
+                first_name: person.firstName,
+                last_name: person.lastName,
+                doc_type: person.docType,
+                doc_number: person.docNumber,
+                phone: person.phone,
+                email: person.email
+            })
             .eq('id', person.id)
             .select()
             .single();
         if (error) throw error;
-        return data;
+        return {
+            id: data.id,
+            firstName: data.first_name,
+            lastName: data.last_name,
+            docType: data.doc_type,
+            docNumber: data.doc_number,
+            phone: data.phone,
+            email: data.email
+        };
     }
 
     async addPayment(debtId, payment) {
         const { data, error } = await supabase
             .from('payments')
             .insert([{
-                ...payment,
                 debt_id: debtId,
-                user_id: (await supabase.auth.getUser()).data.user?.id || MOCK_USER_ID
+                user_id: (await supabase.auth.getUser()).data.user?.id || MOCK_USER_ID,
+                amount: payment.amount,
+                date: payment.date,
+                medium: payment.medium,
+                note: payment.note,
+                evidence: payment.evidence
             }])
             .select()
             .single();
         if (error) throw error;
-
-        // We also need to update the debt's paid_amount
-        // This should ideally be a DB trigger or a RCP, but for now we do it here
         return data;
     }
 

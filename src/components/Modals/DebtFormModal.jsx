@@ -32,12 +32,19 @@ export default function DebtFormModal({ isOpen, onClose, onAdd, onEdit, debtToEd
         }
     }, [lastCreatedPerson, isOpen]);
 
+    // Helper to format date for datetime-local input (YYYY-MM-DDTHH:mm)
+    const formatDateForInput = (dateValue) => {
+        if (!dateValue) return '';
+        const d = new Date(dateValue);
+        return d.toLocaleString('sv').slice(0, 16).replace(' ', 'T');
+    };
+
     // Populate data when editing
     useEffect(() => {
         if (isOpen && debtToEdit) {
             setFormData({
                 ...debtToEdit,
-                date: debtToEdit.date // Keep original date or format if needed
+                date: formatDateForInput(debtToEdit.date)
             });
             setSearchTerm(debtToEdit.counterparty || '');
             setShowOptional(!!(debtToEdit.observations || debtToEdit.dueDate || debtToEdit.medium !== 'Transferencia' || debtToEdit.evidence));
@@ -53,7 +60,7 @@ export default function DebtFormModal({ isOpen, onClose, onAdd, onEdit, debtToEd
                 evidence: null,
                 observations: '',
                 dueDate: '',
-                date: new Date().toLocaleString('sv').slice(0, 16).replace(' ', 'T')
+                date: formatDateForInput(new Date())
             });
             setSearchTerm('');
         }
@@ -82,9 +89,11 @@ export default function DebtFormModal({ isOpen, onClose, onAdd, onEdit, debtToEd
         setShowDropdown(false);
     };
 
+    const isAmountInvalid = debtToEdit && formData.amount && parseFloat(formData.amount) < (debtToEdit.paidAmount || 0);
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!formData.personId || !formData.amount) return;
+        if (!formData.personId || !formData.amount || isAmountInvalid) return;
 
         // Find person name
         const person = persons.find(p => p.id === formData.personId);
@@ -228,14 +237,29 @@ export default function DebtFormModal({ isOpen, onClose, onAdd, onEdit, debtToEd
                     <span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}>$</span>
                     <input
                         type="number"
-                        className="form-input"
+                        className={`form-input ${isAmountInvalid ? 'error' : ''}`}
                         placeholder="0.00"
-                        style={{ paddingLeft: '24px' }}
+                        style={{
+                            paddingLeft: '24px',
+                            borderColor: isAmountInvalid ? '#ef4444' : ''
+                        }}
                         value={formData.amount}
                         onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                         required
                         step="0.01"
                     />
+                    {isAmountInvalid && (
+                        <div style={{
+                            color: '#ef4444',
+                            fontSize: '12px',
+                            marginTop: '4px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px'
+                        }}>
+                            <span>⚠️ El monto no puede ser menor a lo ya pagado (${debtToEdit.paidAmount}). Modifica los pagos primero.</span>
+                        </div>
+                    )}
                 </div>
             </div>
 
