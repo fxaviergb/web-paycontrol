@@ -125,8 +125,13 @@
 .stat-total-display {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
+    /* Left aligned */
     gap: 16px;
     margin-top: auto;
+    margin-bottom: auto;
+    /* Vertically centered */
+    width: 100%;
 }
 
 .stat-total-value {
@@ -342,9 +347,9 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    margin-bottom: 16px;
+    padding-bottom: 0;
+    /* border-bottom: 1px solid rgba(255, 255, 255, 0.05); Removed by user request */
 }
 
 .debts-header h2 {
@@ -493,15 +498,19 @@
 /* Responsive Table Grid */
 .debt-grid {
     display: grid;
-    grid-template-columns: 48px 2.5fr 1fr 1fr 1fr 1fr 130px 150px;
+    grid-template-columns: 48px 1.5fr 0.9fr 1fr 1fr 1fr 120px;
     gap: 16px;
     align-items: center;
 }
 
+.debt-grid.history-view {
+    grid-template-columns: 48px 1.5fr 0.8fr 0.8fr 0.8fr 0.8fr 100px 120px;
+}
+
 .doc-header {
-    padding: 0 0 12px 0;
-    border-bottom: 1px solid var(--border-subtle);
-    margin-bottom: 16px;
+    padding: 0 0 4px 0;
+    /* border-bottom: 1px solid var(--border-subtle); Removed by user request */
+    margin-bottom: 8px;
     color: var(--text-secondary);
     font-size: 12px;
     font-weight: 600;
@@ -790,4 +799,108 @@
     .show-mobile {
         display: block;
     }
+}
+
+/* Sortable Headers */
+.sortable-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s;
+}
+
+.sortable-header:hover {
+    color: var(--color-accent);
+}
+
+.sort-icon-inactive {
+    opacity: 0.3;
+}
+
+.sort-icon-active {
+    color: var(--color-accent);
+}
+
+/* Pagination */
+/* Pagination */
+.pagination-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px;
+    margin-top: 16px;
+    /* border-top: 1px solid rgba(255, 255, 255, 0.05); Removed by user request */
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.items-per-page-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pagination-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.rows-select {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: inherit;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.rows-select:hover {
+    border-color: var(--color-accent);
+}
+
+.pagination-buttons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pagination-btn {
+    background-color: var(--bg-surface-hover);
+    color: var(--text-secondary);
+    border: 1px solid transparent;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 6px;
+    border-radius: 8px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background-color: var(--bg-card);
+    border-color: var(--border-subtle);
+    color: var(--text-primary);
+}
+
+.pagination-btn.active {
+    background-color: var(--color-accent);
+    color: white;
+    font-weight: 700;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    background-color: transparent;
 }

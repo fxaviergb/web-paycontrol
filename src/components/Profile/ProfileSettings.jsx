@@ -42,7 +42,7 @@ export default function ProfileSettings({ profile, onUpdateProfile, onLogout }) 
 
                 <div className="profile-identity">
                     <h2>{formData.firstName || 'Usuario'} {formData.lastName || ''}</h2>
-                    <span className="profile-role">Plan Premium</span>
+                    <span className="profile-role">Teamdroid Tech</span>
                 </div>
             </div>
 
@@ -64,45 +64,120 @@ export default function ProfileSettings({ profile, onUpdateProfile, onLogout }) 
                         <div className="form-row">
                             <div className="form-group">
                                 <label className="form-label">Nombre</label>
-                                <input
-                                    type="text"
-                                    className="form-input"
-                                    value={formData.firstName}
-                                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                                    required
-                                />
+                                <div className="input-group-unified" style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    backgroundColor: 'rgba(30, 41, 59, 0.5)',
+                                    border: '1px solid var(--border-subtle)',
+                                    borderRadius: '12px',
+                                    padding: '2px 14px',
+                                    transition: 'all 0.2s ease'
+                                }}>
+                                    <input
+                                        type="text"
+                                        value={formData.firstName}
+                                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                                        required
+                                        style={{
+                                            width: '100%',
+                                            background: 'transparent',
+                                            border: 'none',
+                                            color: 'var(--text-primary)',
+                                            padding: '12px 0',
+                                            outline: 'none',
+                                            fontSize: '14px'
+                                        }}
+                                    />
+                                </div>
                             </div>
                             <div className="form-group">
                                 <label className="form-label">Apellido</label>
-                                <input
-                                    type="text"
-                                    className="form-input"
-                                    value={formData.lastName}
-                                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                                    required
-                                />
+                                <div className="input-group-unified" style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    backgroundColor: 'rgba(30, 41, 59, 0.5)',
+                                    border: '1px solid var(--border-subtle)',
+                                    borderRadius: '12px',
+                                    padding: '2px 14px',
+                                    transition: 'all 0.2s ease'
+                                }}>
+                                    <input
+                                        type="text"
+                                        value={formData.lastName}
+                                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                                        required
+                                        style={{
+                                            width: '100%',
+                                            background: 'transparent',
+                                            border: 'none',
+                                            color: 'var(--text-primary)',
+                                            padding: '12px 0',
+                                            outline: 'none',
+                                            fontSize: '14px'
+                                        }}
+                                    />
+                                </div>
                             </div>
                         </div>
 
                         <div className="form-group">
                             <label className="form-label">Correo Electrónico</label>
-                            <input
-                                type="email"
-                                className="form-input disabled"
-                                value={formData.email}
-                                disabled
-                                title="El email se gestiona desde la configuración de cuenta"
-                            />
+                            <div className="input-group-unified" style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                backgroundColor: 'rgba(30, 41, 59, 0.3)',
+                                border: '1px solid var(--border-subtle)',
+                                borderRadius: '12px',
+                                padding: '2px 14px',
+                                transition: 'all 0.2s ease',
+                                opacity: 0.7,
+                                cursor: 'not-allowed'
+                            }}>
+                                <input
+                                    type="email"
+                                    value={formData.email}
+                                    disabled
+                                    title="El email se gestiona desde la configuración de cuenta"
+                                    style={{
+                                        width: '100%',
+                                        background: 'transparent',
+                                        border: 'none',
+                                        color: 'var(--text-muted)',
+                                        padding: '12px 0',
+                                        outline: 'none',
+                                        fontSize: '14px',
+                                        cursor: 'not-allowed'
+                                    }}
+                                />
+                            </div>
                         </div>
 
                         <div className="form-group">
                             <label className="form-label">Ubicación</label>
-                            <input
-                                type="text"
-                                className="form-input"
-                                value={formData.location}
-                                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                            />
+                            <div className="input-group-unified" style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                backgroundColor: 'rgba(30, 41, 59, 0.5)',
+                                border: '1px solid var(--border-subtle)',
+                                borderRadius: '12px',
+                                padding: '2px 14px',
+                                transition: 'all 0.2s ease'
+                            }}>
+                                <input
+                                    type="text"
+                                    value={formData.location}
+                                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                                    style={{
+                                        width: '100%',
+                                        background: 'transparent',
+                                        border: 'none',
+                                        color: 'var(--text-primary)',
+                                        padding: '12px 0',
+                                        outline: 'none',
+                                        fontSize: '14px'
+                                    }}
+                                />
+                            </div>
                         </div>
 
                         <div className="form-actions">

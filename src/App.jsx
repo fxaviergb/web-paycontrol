@@ -15,7 +15,7 @@ import PersonListModal from './components/Modals/PersonListModal';
 import { api } from './services/api';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import LoginView from './components/Auth/LoginView';
-import { Plus, Menu, UserPlus, Receipt, ArrowUpRight, ArrowDownLeft, Clock, Eye, Archive, LayoutDashboard, User, Settings, LogOut } from 'lucide-react';
+import { Plus, Menu, UserPlus, Receipt, ArrowUpRight, ArrowDownLeft, Clock, Eye, Archive, LayoutDashboard, User, Settings, LogOut, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
 import './app.css';
 import './components/Dashboard/dashboard.css';
 
@@ -39,6 +39,11 @@ function MainAppContent() {
   const [selectedDebtDetails, setSelectedDebtDetails] = useState(null); // For viewing details
   const [selectedDebtToPay, setSelectedDebtToPay] = useState(null); // For paying
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 1024);
+
+  // History View State
+  const [historySortConfig, setHistorySortConfig] = useState({ key: 'date', direction: 'desc' });
+  const [historyCurrentPage, setHistoryCurrentPage] = useState(1);
+  const [historyItemsPerPage, setHistoryItemsPerPage] = useState(10);
 
   // Load Initial Data
   useEffect(() => {
@@ -254,6 +259,92 @@ function MainAppContent() {
     }
   };
 
+  // --- History View Logic ---
+  const handleHistorySort = (key) => {
+    let direction = 'asc';
+    if (historySortConfig.key === key && historySortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setHistorySortConfig({ key, direction });
+    setHistoryCurrentPage(1);
+  };
+
+  const handleHistoryItemsPerPageChange = (e) => {
+    setHistoryItemsPerPage(Number(e.target.value));
+    setHistoryCurrentPage(1);
+  };
+
+  const sortedHistoryDebts = useMemo(() => {
+    const sorted = [...debts].sort((a, b) => {
+      // Primary sort: Status priority (Active > Settled > Archived)
+      const rank = { active: 0, settled: 1, archived: 2 };
+      if (rank[a.status] !== rank[b.status]) {
+        return rank[a.status] - rank[b.status];
+      }
+
+      // Secondary sort: User selected column
+
+      if (historySortConfig.key === 'date') {
+        return historySortConfig.direction === 'asc'
+          ? new Date(a.date) - new Date(b.date)
+          : new Date(b.date) - new Date(a.date);
+      }
+      if (historySortConfig.key === 'counterparty') {
+        return historySortConfig.direction === 'asc'
+          ? a.counterparty.localeCompare(b.counterparty)
+          : b.counterparty.localeCompare(a.counterparty);
+      }
+      if (historySortConfig.key === 'amount') {
+        return historySortConfig.direction === 'asc'
+          ? a.amount - b.amount
+          : b.amount - a.amount;
+      }
+      if (historySortConfig.key === 'paidAmount') {
+        return historySortConfig.direction === 'asc'
+          ? a.paidAmount - b.paidAmount
+          : b.paidAmount - a.paidAmount;
+      }
+      if (historySortConfig.key === 'pending') {
+        const pendingA = a.amount - a.paidAmount;
+        const pendingB = b.amount - b.paidAmount;
+        return historySortConfig.direction === 'asc'
+          ? pendingA - pendingB
+          : pendingB - pendingA;
+      }
+      return 0;
+    });
+    return sorted;
+  }, [debts, historySortConfig]);
+
+  const historyIndexOfLastItem = historyCurrentPage * historyItemsPerPage;
+  const historyIndexOfFirstItem = historyIndexOfLastItem - historyItemsPerPage;
+  const currentHistoryItems = sortedHistoryDebts.slice(historyIndexOfFirstItem, historyIndexOfLastItem);
+  const historyTotalPages = Math.ceil(sortedHistoryDebts.length / historyItemsPerPage);
+
+  const historyPageNumbers = [];
+  for (let i = 1; i <= historyTotalPages; i++) {
+    historyPageNumbers.push(i);
+  }
+
+  const getSortIcon = (key) => {
+    if (historySortConfig.key !== key) return <ArrowUpDown size={14} className="sort-icon-inactive" />;
+    return historySortConfig.direction === 'asc'
+      ? <ArrowUp size={14} className="sort-icon-active" />
+      : <ArrowDown size={14} className="sort-icon-active" />;
+  };
+
+  const HistorySortableHeader = ({ label, sortKey, align = 'left', className = '' }) => (
+    <div
+      className={`sortable-header ${className}`}
+      onClick={() => handleHistorySort(sortKey)}
+      style={{ justifyContent: align === 'center' ? 'center' : 'flex-start' }}
+    >
+      {label}
+      {getSortIcon(sortKey)}
+    </div>
+  );
+  // --- End History View Logic ---
+
   if (!user || isPasswordRecovery) return <LoginView />;
 
   return (
@@ -301,7 +392,7 @@ function MainAppContent() {
                 <div className="user-profile">
                   <div className="user-info">
                     <span className="user-name">{userProfile.firstName} {userProfile.lastName}</span>
-                    <span className="user-role">Plan Premium</span>
+                    <span className="user-role">Teamdroid Tech</span>
                   </div>
                   <img src={userProfile.avatar} alt="Profile" className="avatar" />
                 </div>
@@ -327,36 +418,26 @@ function MainAppContent() {
 
               {currentView === 'history' && (
                 <div className="card" style={{ height: 'calc(100vh - 140px)', padding: '24px', overflowY: 'auto' }}>
-                  <div className="debts-header" style={{ borderBottom: '1px solid var(--border-subtle)', marginBottom: '24px' }}>
+                  <div className="debts-header" style={{ marginBottom: '16px', paddingBottom: '0' }}>
                     <h2 style={{ fontSize: '20px' }}>Historial Completo ({debts.length})</h2>
                     <button className="btn-secondary" onClick={() => setCurrentView('dashboard')}>Panel principal</button>
                   </div>
 
                   <div className="debts-list">
-                    <div className="debt-grid doc-header hide-mobile">
+                    <div className="debt-grid history-view doc-header hide-mobile" style={{ marginBottom: '8px', paddingBottom: '4px' }}>
                       <div></div>
-                      <div>DEUDA</div>
-                      <div>FECHA</div>
-                      <div>INICIAL</div>
-                      <div>PAGADO</div>
-                      <div>PENDIENTE</div>
+                      <HistorySortableHeader label="DEUDA" sortKey="counterparty" />
+                      <HistorySortableHeader label="FECHA" sortKey="date" />
+                      <HistorySortableHeader label="INICIAL" sortKey="amount" />
+                      <HistorySortableHeader label="PAGADO" sortKey="paidAmount" />
+                      <HistorySortableHeader label="PENDIENTE" sortKey="pending" />
                       <div style={{ textAlign: 'center' }}>ESTADO</div>
                       <div style={{ textAlign: 'center' }}>ACCIONES</div>
                     </div>
 
-                    {/* Advanced Sorting: Pendiente (Oldest) > Pagado > Archivado */}
-                    {[...debts].sort((a, b) => {
-                      const rank = { active: 0, settled: 1, archived: 2 };
-                      if (rank[a.status] !== rank[b.status]) {
-                        return rank[a.status] - rank[b.status];
-                      }
-                      if (a.status === 'active') {
-                        return new Date(a.date) - new Date(b.date); // Oldest first
-                      }
-                      return new Date(b.date) - new Date(a.date); // Newest first for others
-                    }).map((debt, index) => (
+                    {currentHistoryItems.map((debt, index) => (
                       <div key={debt.id} className="debt-item-minimal fade-in" style={{ animationDelay: `${index * 0.05}s` }}>
-                        <div className="debt-grid">
+                        <div className="debt-grid history-view">
                           <div className="debt-icon-container">
                             <div className={`debt-icon ${debt.type}`}>
                               {debt.type === 'lent' ? <ArrowUpRight size={20} /> : <ArrowDownLeft size={20} />}
@@ -417,6 +498,56 @@ function MainAppContent() {
                       </div>
                     ))}
                   </div>
+
+                  {/* Pagination Footer */}
+                  {debts.length > 0 && (
+                    <div className="pagination-controls">
+                      <div className="items-per-page-selector">
+                        <span className="pagination-label">Mostrar:</span>
+                        <select
+                          value={historyItemsPerPage}
+                          onChange={handleHistoryItemsPerPageChange}
+                          className="rows-select"
+                        >
+                          <option value={5}>5</option>
+                          <option value={10}>10</option>
+                          <option value={20}>20</option>
+                          <option value={50}>50</option>
+                        </select>
+                      </div>
+
+                      {historyTotalPages > 1 && (
+                        <div className="pagination-buttons">
+                          <button
+                            className="pagination-btn arrow"
+                            onClick={() => setHistoryCurrentPage(prev => Math.max(prev - 1, 1))}
+                            disabled={historyCurrentPage === 1}
+                          >
+                            &lt;
+                          </button>
+
+                          {historyPageNumbers.map(number => (
+                            <button
+                              key={number}
+                              onClick={() => setHistoryCurrentPage(number)}
+                              className={`pagination-btn page-number ${historyCurrentPage === number ? 'active' : ''}`}
+                            >
+                              {number}
+                            </button>
+                          ))}
+
+                          <button
+                            className="pagination-btn arrow"
+                            onClick={() => setHistoryCurrentPage(prev => Math.min(prev + 1, historyTotalPages))}
+                            disabled={historyCurrentPage === historyTotalPages}
+                          >
+                            &gt;
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                 </div>
               )}
 

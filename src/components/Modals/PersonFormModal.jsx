@@ -62,26 +62,62 @@ export default function PersonFormModal({ isOpen, onClose, onAdd, onEdit, person
             <div className="form-row" style={{ display: 'flex', gap: '16px' }}>
                 <div className="form-group" style={{ flex: 1 }}>
                     <label className="form-label">Nombres *</label>
-                    <input
-                        type="text"
-                        className="form-input"
-                        placeholder="Ej: Juan"
-                        value={formData.firstName}
-                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                        required
-                        autoFocus
-                    />
+                    <div className="input-group-unified" style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        backgroundColor: 'rgba(30, 41, 59, 0.5)',
+                        border: '1px solid var(--border-subtle)',
+                        borderRadius: '12px',
+                        padding: '2px 14px',
+                        transition: 'all 0.2s ease'
+                    }}>
+                        <input
+                            type="text"
+                            placeholder="Ej: Juan"
+                            value={formData.firstName}
+                            onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                            required
+                            autoFocus
+                            style={{
+                                width: '100%',
+                                background: 'transparent',
+                                border: 'none',
+                                color: 'var(--text-primary)',
+                                padding: '12px 0',
+                                outline: 'none',
+                                fontSize: '14px'
+                            }}
+                        />
+                    </div>
                 </div>
                 <div className="form-group" style={{ flex: 1 }}>
                     <label className="form-label">Apellidos *</label>
-                    <input
-                        type="text"
-                        className="form-input"
-                        placeholder="Ej: Pérez"
-                        value={formData.lastName}
-                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                        required
-                    />
+                    <div className="input-group-unified" style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        backgroundColor: 'rgba(30, 41, 59, 0.5)',
+                        border: '1px solid var(--border-subtle)',
+                        borderRadius: '12px',
+                        padding: '2px 14px',
+                        transition: 'all 0.2s ease'
+                    }}>
+                        <input
+                            type="text"
+                            placeholder="Ej: Pérez"
+                            value={formData.lastName}
+                            onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                            required
+                            style={{
+                                width: '100%',
+                                background: 'transparent',
+                                border: 'none',
+                                color: 'var(--text-primary)',
+                                padding: '12px 0',
+                                outline: 'none',
+                                fontSize: '14px'
+                            }}
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -112,71 +148,163 @@ export default function PersonFormModal({ isOpen, onClose, onAdd, onEdit, person
                     <div className="form-group">
                         <label className="form-label">Identificación</label>
                         <div style={{ display: 'flex', gap: '8px' }}>
-                            <select
-                                className="form-select"
-                                style={{ width: '140px' }}
-                                value={formData.docType}
-                                onChange={(e) => setFormData({ ...formData, docType: e.target.value })}
-                            >
-                                <option value="CEDULA">CÉDULA</option>
-                                <option value="RUC">RUC</option>
-                                <option value="PASAPORTE">PASAPORTE</option>
-                            </select>
-                            <input
-                                type="text"
-                                className="form-input" // Note: validation regex can be added later
-                                placeholder="Número de documento"
-                                value={formData.docNumber}
-                                onChange={(e) => setFormData({ ...formData, docNumber: e.target.value })}
-                                style={{ flex: 1 }}
-                            />
+                            <div className="input-group-unified" style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                backgroundColor: 'rgba(30, 41, 59, 0.5)',
+                                border: '1px solid var(--border-subtle)',
+                                borderRadius: '12px',
+                                padding: '2px 14px',
+                                transition: 'all 0.2s ease',
+                                width: '140px'
+                            }}>
+                                <select
+                                    value={formData.docType}
+                                    onChange={(e) => setFormData({ ...formData, docType: e.target.value })}
+                                    style={{
+                                        width: '100%',
+                                        background: 'transparent',
+                                        border: 'none',
+                                        color: 'var(--text-primary)',
+                                        padding: '12px 0',
+                                        outline: 'none',
+                                        fontSize: '14px',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    <option value="CEDULA" style={{ background: '#1e293b' }}>CÉDULA</option>
+                                    <option value="RUC" style={{ background: '#1e293b' }}>RUC</option>
+                                    <option value="PASAPORTE" style={{ background: '#1e293b' }}>PASAPORTE</option>
+                                </select>
+                            </div>
+                            <div className="input-group-unified" style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                backgroundColor: 'rgba(30, 41, 59, 0.5)',
+                                border: '1px solid var(--border-subtle)',
+                                borderRadius: '12px',
+                                padding: '2px 14px',
+                                transition: 'all 0.2s ease',
+                                flex: 1
+                            }}>
+                                <input
+                                    type="text"
+                                    placeholder="Número de documento"
+                                    value={formData.docNumber}
+                                    onChange={(e) => setFormData({ ...formData, docNumber: e.target.value })}
+                                    style={{
+                                        width: '100%',
+                                        background: 'transparent',
+                                        border: 'none',
+                                        color: 'var(--text-primary)',
+                                        padding: '12px 0',
+                                        outline: 'none',
+                                        fontSize: '14px'
+                                    }}
+                                />
+                            </div>
                         </div>
                     </div>
 
                     <div className="form-group">
                         <label className="form-label">Teléfono Móvil</label>
                         <div style={{ display: 'flex', gap: '8px' }}>
-                            <select
-                                className="form-select"
-                                style={{ width: '140px' }}
-                                value={formData.phone.split(' ')[0] || '+593'}
-                                onChange={(e) => {
-                                    const currentNumber = formData.phone.split(' ')[1] || '';
-                                    setFormData({ ...formData, phone: `${e.target.value} ${currentNumber}` });
-                                }}
-                            >
-                                <option value="+593">+593 🇪🇨</option>
-                                <option value="+1">+1 🇺🇸</option>
-                                <option value="+34">+34 🇪🇸</option>
-                                <option value="+57">+57 🇨🇴</option>
-                                <option value="+51">+51 🇵🇪</option>
-                                <option value="+52">+52 🇲🇽</option>
-                                <option value="+54">+54 🇦🇷</option>
-                                <option value="+56">+56 🇨🇱</option>
-                            </select>
-                            <input
-                                type="tel"
-                                className="form-input"
-                                placeholder="0991234567"
-                                value={formData.phone.split(' ')[1] || ''}
-                                onChange={(e) => {
-                                    const currentCode = formData.phone.split(' ')[0] || '+593';
-                                    setFormData({ ...formData, phone: `${currentCode} ${e.target.value}` });
-                                }}
-                                style={{ flex: 1 }}
-                            />
+                            <div className="input-group-unified" style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                backgroundColor: 'rgba(30, 41, 59, 0.5)',
+                                border: '1px solid var(--border-subtle)',
+                                borderRadius: '12px',
+                                padding: '2px 14px',
+                                transition: 'all 0.2s ease',
+                                width: '140px'
+                            }}>
+                                <select
+                                    value={formData.phone.split(' ')[0] || '+593'}
+                                    onChange={(e) => {
+                                        const currentNumber = formData.phone.split(' ')[1] || '';
+                                        setFormData({ ...formData, phone: `${e.target.value} ${currentNumber}` });
+                                    }}
+                                    style={{
+                                        width: '100%',
+                                        background: 'transparent',
+                                        border: 'none',
+                                        color: 'var(--text-primary)',
+                                        padding: '12px 0',
+                                        outline: 'none',
+                                        fontSize: '14px',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    <option value="+593" style={{ background: '#1e293b' }}>+593 🇪🇨</option>
+                                    <option value="+1" style={{ background: '#1e293b' }}>+1 🇺🇸</option>
+                                    <option value="+34" style={{ background: '#1e293b' }}>+34 🇪🇸</option>
+                                    <option value="+57" style={{ background: '#1e293b' }}>+57 🇨🇴</option>
+                                    <option value="+51" style={{ background: '#1e293b' }}>+51 🇵🇪</option>
+                                    <option value="+52" style={{ background: '#1e293b' }}>+52 🇲🇽</option>
+                                    <option value="+54" style={{ background: '#1e293b' }}>+54 🇦🇷</option>
+                                    <option value="+56" style={{ background: '#1e293b' }}>+56 🇨🇱</option>
+                                </select>
+                            </div>
+                            <div className="input-group-unified" style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                backgroundColor: 'rgba(30, 41, 59, 0.5)',
+                                border: '1px solid var(--border-subtle)',
+                                borderRadius: '12px',
+                                padding: '2px 14px',
+                                transition: 'all 0.2s ease',
+                                flex: 1
+                            }}>
+                                <input
+                                    type="tel"
+                                    placeholder="0991234567"
+                                    value={formData.phone.split(' ')[1] || ''}
+                                    onChange={(e) => {
+                                        const currentCode = formData.phone.split(' ')[0] || '+593';
+                                        setFormData({ ...formData, phone: `${currentCode} ${e.target.value}` });
+                                    }}
+                                    style={{
+                                        width: '100%',
+                                        background: 'transparent',
+                                        border: 'none',
+                                        color: 'var(--text-primary)',
+                                        padding: '12px 0',
+                                        outline: 'none',
+                                        fontSize: '14px'
+                                    }}
+                                />
+                            </div>
                         </div>
                     </div>
 
                     <div className="form-group">
                         <label className="form-label">Correo Electrónico</label>
-                        <input
-                            type="email"
-                            className="form-input"
-                            placeholder="ejemplo@email.com"
-                            value={formData.email}
-                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        />
+                        <div className="input-group-unified" style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            backgroundColor: 'rgba(30, 41, 59, 0.5)',
+                            border: '1px solid var(--border-subtle)',
+                            borderRadius: '12px',
+                            padding: '2px 14px',
+                            transition: 'all 0.2s ease'
+                        }}>
+                            <input
+                                type="email"
+                                placeholder="ejemplo@email.com"
+                                value={formData.email}
+                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                style={{
+                                    width: '100%',
+                                    background: 'transparent',
+                                    border: 'none',
+                                    color: 'var(--text-primary)',
+                                    padding: '12px 0',
+                                    outline: 'none',
+                                    fontSize: '14px'
+                                }}
+                            />
+                        </div>
                     </div>
                 </div>
             )}

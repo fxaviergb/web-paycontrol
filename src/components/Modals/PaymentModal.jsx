@@ -58,34 +58,88 @@ export default function PaymentModal({ isOpen, onClose, debt, onPay }) {
             <div style={{ display: 'flex', gap: '12px', marginBottom: '14px' }}>
                 <div style={{ flex: '2' }}>
                     <label className="form-label">Fecha</label>
-                    <input
-                        type="date"
-                        className="form-input"
-                        value={dateOnly}
-                        onChange={(e) => setDateOnly(e.target.value)}
-                        required
-                    />
+                    <div className="input-group-unified" style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        backgroundColor: 'rgba(30, 41, 59, 0.5)',
+                        border: '1px solid var(--border-subtle)',
+                        borderRadius: '12px',
+                        padding: '2px 14px',
+                        transition: 'all 0.2s ease'
+                    }}>
+                        <input
+                            type="date"
+                            value={dateOnly}
+                            onChange={(e) => setDateOnly(e.target.value)}
+                            required
+                            style={{
+                                width: '100%',
+                                background: 'transparent',
+                                border: 'none',
+                                color: 'var(--text-primary)',
+                                padding: '12px 0',
+                                outline: 'none',
+                                fontSize: '14px',
+                                cursor: 'pointer'
+                            }}
+                        />
+                    </div>
                 </div>
                 <div style={{ flex: '1' }}>
                     <label className="form-label">Hora</label>
-                    <input
-                        type="time"
-                        className="form-input"
-                        value={timeOnly}
-                        onChange={(e) => setTimeOnly(e.target.value)}
-                    />
+                    <div className="input-group-unified" style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        backgroundColor: 'rgba(30, 41, 59, 0.5)',
+                        border: '1px solid var(--border-subtle)',
+                        borderRadius: '12px',
+                        padding: '2px 14px',
+                        transition: 'all 0.2s ease'
+                    }}>
+                        <input
+                            type="time"
+                            value={timeOnly}
+                            onChange={(e) => setTimeOnly(e.target.value)}
+                            style={{
+                                width: '100%',
+                                background: 'transparent',
+                                border: 'none',
+                                color: 'var(--text-primary)',
+                                padding: '12px 0',
+                                outline: 'none',
+                                fontSize: '14px',
+                                cursor: 'pointer'
+                            }}
+                        />
+                    </div>
                 </div>
             </div>
 
             <div className="form-group">
                 <label className="form-label">Monto del Pago</label>
-                <div style={{ position: 'relative' }}>
-                    <span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}>$</span>
+                <div className="input-group-unified" style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    backgroundColor: 'rgba(30, 41, 59, 0.5)',
+                    border: '1px solid var(--border-subtle)',
+                    borderRadius: '12px',
+                    padding: '2px 14px',
+                    transition: 'all 0.2s ease'
+                }}>
+                    <span style={{ color: 'var(--text-muted)', fontSize: '14px', marginRight: '8px' }}>$</span>
                     <input
                         type="number"
-                        className="form-input"
                         placeholder="0.00"
-                        style={{ paddingLeft: '24px', fontSize: '18px' }}
+                        style={{
+                            width: '100%',
+                            background: 'transparent',
+                            border: 'none',
+                            color: 'var(--text-primary)',
+                            padding: '12px 0',
+                            outline: 'none',
+                            fontSize: '18px',
+                            fontWeight: '500'
+                        }}
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
                         max={remaining}
@@ -116,27 +170,64 @@ export default function PaymentModal({ isOpen, onClose, debt, onPay }) {
 
             <div className="form-group">
                 <label className="form-label">Medio de Pago</label>
-                <select
-                    className="form-select"
-                    value={medium}
-                    onChange={(e) => setMedium(e.target.value)}
-                >
-                    <option value="Transferencia">Transferencia</option>
-                    <option value="Efectivo">Efectivo</option>
-                    <option value="Tarjeta">Tarjeta</option>
-                    <option value="Otro">Otro</option>
-                </select>
+                <div className="input-group-unified" style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    backgroundColor: 'rgba(30, 41, 59, 0.5)',
+                    border: '1px solid var(--border-subtle)',
+                    borderRadius: '12px',
+                    padding: '2px 14px',
+                    transition: 'all 0.2s ease'
+                }}>
+                    <select
+                        value={medium}
+                        onChange={(e) => setMedium(e.target.value)}
+                        style={{
+                            width: '100%',
+                            background: 'transparent',
+                            border: 'none',
+                            color: 'var(--text-primary)',
+                            padding: '12px 0',
+                            outline: 'none',
+                            fontSize: '14px',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        <option value="Transferencia" style={{ background: '#1e293b' }}>Transferencia</option>
+                        <option value="Efectivo" style={{ background: '#1e293b' }}>Efectivo</option>
+                        <option value="Tarjeta" style={{ background: '#1e293b' }}>Tarjeta</option>
+                        <option value="Otro" style={{ background: '#1e293b' }}>Otro</option>
+                    </select>
+                </div>
             </div>
 
             <div className="form-group">
                 <label className="form-label">Observaciones</label>
-                <input
-                    type="text"
-                    className="form-input"
-                    placeholder="Ej: Pago parcial..."
-                    value={note}
-                    onChange={(e) => setNote(e.target.value)}
-                />
+                <div className="input-group-unified" style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    backgroundColor: 'rgba(30, 41, 59, 0.5)',
+                    border: '1px solid var(--border-subtle)',
+                    borderRadius: '12px',
+                    padding: '2px 14px',
+                    transition: 'all 0.2s ease'
+                }}>
+                    <input
+                        type="text"
+                        placeholder="Ej: Pago parcial..."
+                        value={note}
+                        onChange={(e) => setNote(e.target.value)}
+                        style={{
+                            width: '100%',
+                            background: 'transparent',
+                            border: 'none',
+                            color: 'var(--text-primary)',
+                            padding: '12px 0',
+                            outline: 'none',
+                            fontSize: '14px'
+                        }}
+                    />
+                </div>
             </div>
 
 
