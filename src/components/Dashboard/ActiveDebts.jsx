@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowUpRight, ArrowDownLeft, Clock, Eye, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { ArrowUpRight, ArrowDownLeft, Clock, Eye, ArrowUpDown, ArrowUp, ArrowDown, Wallet } from 'lucide-react';
 import './dashboard.css';
 
 export default function ActiveDebts({ debts, onDebtClick, onPayClick, onViewAll }) {
@@ -122,23 +122,43 @@ export default function ActiveDebts({ debts, onDebtClick, onPayClick, onViewAll 
                                     </div>
 
                                     <div className="debt-info">
-                                        <h4 className="debt-counterparty-name">{debt.counterparty}</h4>
-                                        <div className="debt-reason-text">{debt.reason}</div>
-
-                                        {/* Ultra-compact Mobile Meta (User preferred) */}
-                                        <div className="show-mobile mobile-meta-compact">
-                                            <div className="m-row-stats">
-                                                <span className="m-val-total">${debt.amount.toFixed(0)}</span>
-                                                <span className="m-dot">•</span>
-                                                <span className="m-val-date">{debt.date?.split('T')[0]}</span>
+                                        <div className="mobile-debt-row">
+                                            <div className="mobile-debt-left">
+                                                <h4 className="debt-counterparty-name">{debt.counterparty}</h4>
+                                                <div className="debt-reason-text">{debt.reason}</div>
+                                                <div className="show-mobile mobile-flex-col" style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px', gap: '1px', alignItems: 'flex-start' }}>
+                                                    <span style={{ fontWeight: '500' }}>Total: ${debt.amount.toFixed(0)}</span>
+                                                    <span style={{ opacity: 0.7, fontSize: '10px' }}>{debt.date?.split('T')[0]}</span>
+                                                </div>
                                             </div>
-                                            <div style={{ marginTop: '4px' }}>
-                                                <div className="m-val-paid" style={{ color: '#10b981', fontSize: '11px', fontWeight: '700' }}>
-                                                    Pagado: ${debt.paidAmount.toFixed(0)}
+
+                                            <div className="mobile-debt-right show-mobile" style={{ gap: '6px' }}>
+                                                {/* Progress Badge */}
+                                                <div className="amount-progress-badge">
+                                                    <div
+                                                        className="amount-progress-fill"
+                                                        style={{
+                                                            width: `${Math.min((debt.paidAmount / debt.amount) * 100, 100)}%`,
+                                                            backgroundColor: (debt.paidAmount / debt.amount) >= 0.8 ? 'var(--color-success)' :
+                                                                (debt.paidAmount / debt.amount) > 0.1 ? 'var(--color-warning)' : 'var(--color-danger)'
+                                                        }}
+                                                    ></div>
+                                                    <div className="amount-progress-text">
+                                                        ${pendingAmount.toFixed(0)}
+                                                    </div>
                                                 </div>
-                                                <div className="m-val-pending">
-                                                    Pendiente: ${pendingAmount.toFixed(0)}
-                                                </div>
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); onPayClick(debt); }}
+                                                    className="btn-pay-minimal"
+                                                >
+                                                    Pagar
+                                                </button>
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); onDebtClick(debt); }}
+                                                    className="btn-view-minimal"
+                                                >
+                                                    Ver
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -164,7 +184,7 @@ export default function ActiveDebts({ debts, onDebtClick, onPayClick, onViewAll 
                                         <span className="badge warning"><Clock size={12} /> Pendiente</span>
                                     </div> - Hidden by user request */}
 
-                                    <div className="debt-actions-area">
+                                    <div className="debt-actions-area hide-mobile">
                                         <button
                                             className="action-pill-compact"
                                             onClick={(e) => { e.stopPropagation(); onPayClick(debt); }}

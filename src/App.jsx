@@ -15,7 +15,7 @@ import PersonListModal from './components/Modals/PersonListModal';
 import { api } from './services/api';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import LoginView from './components/Auth/LoginView';
-import { Plus, Menu, UserPlus, Receipt, ArrowUpRight, ArrowDownLeft, Clock, Eye, Archive, LayoutDashboard, User, Settings, LogOut, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
+import { Plus, Menu, UserPlus, Receipt, ArrowUpRight, ArrowDownLeft, Clock, Eye, Archive, LayoutDashboard, User, Settings, LogOut, ArrowUp, ArrowDown, ArrowUpDown, Wallet, Search } from 'lucide-react';
 import './app.css';
 import './components/Dashboard/dashboard.css';
 
@@ -44,6 +44,7 @@ function MainAppContent() {
   const [historySortConfig, setHistorySortConfig] = useState({ key: 'date', direction: 'desc' });
   const [historyCurrentPage, setHistoryCurrentPage] = useState(1);
   const [historyItemsPerPage, setHistoryItemsPerPage] = useState(10);
+  const [historySearchTerm, setHistorySearchTerm] = useState('');
 
   // Load Initial Data
   useEffect(() => {
@@ -275,7 +276,11 @@ function MainAppContent() {
   };
 
   const sortedHistoryDebts = useMemo(() => {
-    const sorted = [...debts].sort((a, b) => {
+    const filtered = debts.filter(debt =>
+      debt.counterparty.toLowerCase().includes(historySearchTerm.toLowerCase())
+    );
+
+    const sorted = [...filtered].sort((a, b) => {
       // Primary sort: Status priority (Active > Settled > Archived)
       const rank = { active: 0, settled: 1, archived: 2 };
       if (rank[a.status] !== rank[b.status]) {
@@ -314,7 +319,7 @@ function MainAppContent() {
       return 0;
     });
     return sorted;
-  }, [debts, historySortConfig]);
+  }, [debts, historySortConfig, historySearchTerm]);
 
   const historyIndexOfLastItem = historyCurrentPage * historyItemsPerPage;
   const historyIndexOfFirstItem = historyIndexOfLastItem - historyItemsPerPage;
@@ -418,9 +423,26 @@ function MainAppContent() {
 
               {currentView === 'history' && (
                 <div className="card" style={{ height: 'calc(100vh - 140px)', padding: '24px', overflowY: 'auto' }}>
-                  <div className="debts-header" style={{ marginBottom: '16px', paddingBottom: '0' }}>
-                    <h2 style={{ fontSize: '20px' }}>Historial Completo ({debts.length})</h2>
-                    <button className="btn-secondary" onClick={() => setCurrentView('dashboard')}>Panel principal</button>
+                  <div className="debts-header">
+                    <h2 className="debts-title">Historial Completo ({sortedHistoryDebts.length})</h2>
+
+                    <div className="debts-actions-container">
+                      {/* Search Input */}
+                      <div className="debts-search-container">
+                        <Search size={16} className="search-icon" />
+                        <input
+                          type="text"
+                          placeholder="Buscar por nombre..."
+                          value={historySearchTerm}
+                          onChange={(e) => {
+                            setHistorySearchTerm(e.target.value);
+                            setHistoryCurrentPage(1);
+                          }}
+                          className="search-input"
+                        />
+                      </div>
+                      <button className="btn-secondary" onClick={() => setCurrentView('dashboard')}>Panel principal</button>
+                    </div>
                   </div>
 
                   <div className="debts-list">
@@ -444,23 +466,49 @@ function MainAppContent() {
                             </div>
                           </div>
                           <div className="debt-info">
-                            <div className="debt-counterparty-name">{debt.counterparty}</div>
-                            <div className="debt-reason-text">{debt.reason}</div>
+                            <div className="mobile-debt-row">
+                              <div className="mobile-debt-left">
+                                <div className="debt-counterparty-name">{debt.counterparty}</div>
+                                <div className="debt-reason-text">{debt.reason}</div>
+                                <div className="show-mobile mobile-flex-col" style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px', gap: '1px', alignItems: 'flex-start' }}>
+                                  <span style={{ fontWeight: '500' }}>Total: ${debt.amount.toFixed(0)}</span>
+                                  <span style={{ opacity: 0.7, fontSize: '10px' }}>{debt.date?.split('T')[0]}</span>
+                                </div>
+                              </div>
 
-                            {/* Mobile Only Meta */}
-                            <div className="show-mobile mobile-meta-compact">
-                              <div className="m-row-stats">
-                                <span className="m-val-total">${debt.amount.toFixed(0)}</span>
-                                <span className="m-dot">•</span>
-                                <span className="m-val-date">{debt.date?.split('T')[0]}</span>
-                              </div>
-                              <div style={{ color: 'var(--color-success)', fontWeight: '700', fontSize: '11px', marginTop: '4px' }}>
-                                Pagado: ${debt.paidAmount.toFixed(0)}
-                              </div>
-                              <div className="m-val-pending">
-                                {debt.status === 'active'
-                                  ? `Pendiente: $${(debt.amount - debt.paidAmount).toFixed(0)}`
-                                  : debt.status === 'archived' ? 'Archivado' : 'Totalmente Pagado ✨'}
+                              <div className="mobile-debt-right show-mobile" style={{ gap: '6px' }}>
+                                {/* Progress Badge */}
+                                <div className="amount-progress-badge">
+                                  <div
+                                    className="amount-progress-fill"
+                                    style={{
+                                      width: `${Math.min((debt.paidAmount / debt.amount) * 100, 100)}%`,
+                                      backgroundColor: debt.status === 'active' ? 'var(--color-warning)' : 'var(--color-success)'
+                                    }}
+                                  ></div>
+                                  <div className="amount-progress-text">
+                                    ${(debt.status === 'active' ? (debt.amount - debt.paidAmount) : debt.amount).toFixed(0)}
+                                  </div>
+                                </div>
+
+                                {debt.status === 'active' ? (
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); setSelectedDebtToPay(debt); }}
+                                    className="btn-pay-minimal"
+                                  >
+                                    Pagar
+                                  </button>
+                                ) : (
+                                  <span className={`badge ${debt.status === 'archived' ? 'secondary' : 'success'}`} style={{ fontSize: '9px', padding: '4px 8px', height: '26px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '70px' }}>
+                                    {debt.status === 'archived' ? 'ARCH' : 'PAGADO'}
+                                  </span>
+                                )}
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); setSelectedDebtDetails(debt); }}
+                                  className="btn-view-minimal"
+                                >
+                                  Ver
+                                </button>
                               </div>
                             </div>
                           </div>
@@ -486,7 +534,7 @@ function MainAppContent() {
                                 debt.status === 'archived' ? ' Archivado' : ' Pagado'}
                             </span>
                           </div>
-                          <div className="debt-actions-area">
+                          <div className="debt-actions-area hide-mobile">
                             {debt.status === 'active' && (
                               <button className="action-pill-compact" onClick={() => setSelectedDebtToPay(debt)}>Pagar</button>
                             )}

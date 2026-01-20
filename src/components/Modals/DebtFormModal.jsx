@@ -262,7 +262,11 @@ export default function DebtFormModal({ isOpen, onClose, onAdd, onEdit, debtToEd
                                         onClick={() => handleSelectPerson(p)}
                                     >
                                         {p.firstName} {p.lastName}
-                                        <span className="sub-text">{p.docType}: {p.docNumber}</span>
+                                        {p.docNumber ? (
+                                            <span className="sub-text">{p.docType || 'CEDULA'}: {p.docNumber}</span>
+                                        ) : p.email ? (
+                                            <span className="sub-text">{p.email}</span>
+                                        ) : null}
                                     </div>
                                 ))
                             ) : (
