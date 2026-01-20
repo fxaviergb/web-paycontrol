@@ -1,72 +1,95 @@
-# 💳 PayControl - Gestión de Deudas Inteligente
+# PayControl - Gestión Financiera Personal
 
-PayControl es una aplicación premium para el seguimiento de deudas y préstamos, ahora potenciada con un backend escalable en Supabase.
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![Supabase](https://img.shields.io/badge/Supabase-181818?style=for-the-badge&logo=supabase&logoColor=3ECF8E)](https://supabase.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
-## 🚀 Características Principales
+**PayControl** es una plataforma de gestión financiera personal diseñada para llevar un control riguroso de deudas prestadas y pedidas. Con una interfaz de alto impacto y un motor robusto en la nube, PayControl transforma la forma en que manejas tus compromisos económicos.
 
-- **Arquitectura Dual**: Cambia entre datos Mock y Supabase mediante configuración.
-- **Gestión Completa**: Registro de deudas, personas y pagos con evidencias.
-- **Historial Detallado**: Línea de tiempo de pagos y estados automatizados.
-- **Diseño Premium**: Interfaz oscura, ultra-compacta y responsiva.
+![PayControl Dashboard](./public/assets/screenshots/dashboard.png)
+
+## ✨ Funcionalidades
+
+*   **📊 Dashboard Inteligente**: Visualiza tu balance global, deudas activas y estadísticas avanzadas en una sola pantalla.
+*   **🔄 Arquitectura Híbrida**: Cambia instantáneamente entre **Modo Local (Mock)** para pruebas rápidas y **Modo Cloud (Supabase)** para persistencia real.
+*   **👥 Gestión de Contactos**: Directorio unificado de personas con historial de transacciones individual y consolidado.
+*   **📱 Experiencia Multi-dispositivo**: Diseño responsivo optimizado para una gestión ágil desde el móvil o el escritorio.
+*   **📑 Historial y Evidencias**: Seguimiento detallado de cada abono con notas y estados automatizados (Activo, Pagado, Archivado).
+*   **🔒 Seguridad de Grado Bancario**: Autenticación segura y políticas de protección de datos (RLS) integradas con Supabase.
 
 ---
 
-## 🛠️ Configuración Local
+## 🛠️ Guía de Inicio Rápido
 
-### 1. Clonar e Instalar
+### 1. Requisitos Previos
+
+- **Node.js** (v18 o superior)
+- **NPM** o **Yarn**
+
+### 2. Instalación
+
+Clona el repositorio y prepara el entorno:
+
 ```bash
-git clone <tu-repositorio>
+git clone https://github.com/fxaviergb/web-paycontrol.git
 cd app-paycontrol
 npm install
 ```
 
-### 2. Variables de Entorno
-Crea un archivo `.env` en la raíz con:
+### 3. Configuración de Variables de Entorno
+
+Crea un archivo `.env` en la raíz del proyecto. Copia y pega lo siguiente, ajustando según tus necesidades:
+
 ```env
-VITE_SUPABASE_URL=tu_url_de_supabase
-VITE_SUPABASE_ANON_KEY=tu_anon_key
-VITE_DATA_PROVIDER=mock # O 'supabase' para integración real
+# URL de API y Llave Anónima de tu proyecto Supabase
+VITE_SUPABASE_URL=https://tu-proyecto.supabase.co
+VITE_SUPABASE_ANON_KEY=tu-anon-key-aqui
+
+# Proveedor de Datos: 'mock' o 'supabase'
+VITE_DATA_PROVIDER=supabase
 ```
 
-### 3. Ejecutar
+### 4. Lanzamiento
+
+Inicia el servidor de desarrollo:
+
 ```bash
 npm run dev
 ```
 
+La aplicación estará disponible en `http://localhost:5173`.
+
 ---
 
-## 🏗️ Configuración de Supabase (Backend)
+## 🏗️ Configuración del Backend (Supabase)
 
-Sigue estos pasos para preparar tu base de datos:
+Para habilitar todas las funciones de persistencia y autenticación, sigue estos pasos:
 
-1.  **Crear Proyecto**: En el dashboard de Supabase, crea un nuevo proyecto.
-2.  **Esquema SQL**: Ejecuta el siguiente script en el Editor SQL de Supabase para crear las tablas y políticas de seguridad (RLS):
+1.  **Crea un Proyecto** en [Supabase Dashboard](https://app.supabase.com).
+2.  **Configura la Autenticación**: Habilita el proveedor de Correo/Contraseña.
+3.  **Ejecuta el Esquema**: Ve al **SQL Editor** de Supabase y crea las tablas necesarias (`profiles`, `persons`, `debts`, `payments`).
+4.  **Configura las RLS**: Asegúrate de habilitar Row Level Security para que cada usuario solo vea sus propios datos.
 
-```sql
--- Ejecuta el script de migración inicial (ver artifacts/schema.sql si existe)
--- ... (Aquí puedes incluir el SQL que generamos)
+---
+
+## 📂 Estructura del Código
+
+```bash
+src/
+├── components/     # UI modular (Modales, Dashboard, Auth)
+├── contexts/       # Gestión de estado global (AuthContext)
+├── services/       # Lógica de API (SupabaseService vs MockService)
+├── data/           # Datos estáticos y Mock
+├── App.jsx         # Orquestador principal
+└── index.css       # Sistema de diseño y tokens de estilo
 ```
 
-> [!TIP]
-> Para producción, asegúrate de configurar correctamente los dominios permitidos en la sección de Autenticación de Supabase.
+---
+
+## 🦾 Contribución
+
+¿Quieres mejorar PayControl? ¡Los pull requests son bienvenidos! Para cambios mayores, abre un issue primero para discutir lo que te gustaría cambiar.
 
 ---
 
-## 🚀 Despliegue a Producción
-
-Esta aplicación está optimizada para ser desplegada en **Vercel** o **Netlify** directamente desde GitHub.
-
-1.  Conecta tu repositorio a tu plataforma de hosting favorita.
-2.  Configura las **Build Settings**:
-    - **Build Command**: `npm run build`
-    - **Output Directory**: `dist`
-3.  Añade las **Variables de Entorno** (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_DATA_PROVIDER=supabase`) en el panel de control del hosting.
-4.  ¡Listo! Cada `git push` a `main` actualizará tu sitio automáticamente.
-
----
-
-## 📂 Estructura del Proyecto
-
-- `src/services/api.js`: Bridge que gestiona la comunicación con Mock o Supabase.
-- `src/App.jsx`: Componente principal que consume el servicio `api`.
-- `src/data/mock.js`: Datos locales para desarrollo rápido.
+Desarrollado con 🔥 por **xavogb08**

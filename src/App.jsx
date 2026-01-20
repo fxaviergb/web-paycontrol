@@ -24,7 +24,7 @@ function MainAppContent() {
   const [currentView, setCurrentView] = useState('dashboard'); // 'dashboard' | 'profile'
   const [debts, setDebts] = useState([]);
   const [persons, setPersons] = useState([]);
-  const [userProfile, setUserProfile] = useState({ firstName: 'User', lastName: '', avatar: '' });
+  const [userProfile, setUserProfile] = useState(null); // Initialize as null to distinguish "not loaded"
   const [loading, setLoading] = useState(true);
   const [lastCreatedPerson, setLastCreatedPerson] = useState(null); // Track for auto-select
 
@@ -48,30 +48,81 @@ function MainAppContent() {
 
   // Load Initial Data
   useEffect(() => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
+    let isCancelled = false;
+
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [debtsData, personsData, profileData] = await Promise.all([
-          api.getDebts(),
-          api.getPersons(),
-          api.getProfile()
-        ]);
-        setDebts(debtsData);
-        setPersons(personsData);
-        setUserProfile(profileData);
+        let debtsData = [];
+        let personsData = [];
+        let profileData = null;
 
-        // Force profile completion if not complete
-        if (profileData && !profileData.isComplete) {
-          setCurrentView('profile');
+        // Sequential retries (up to 3 times) to ensure session synchronization
+        for (let i = 0; i < 4; i++) {
+          if (isCancelled) return;
+
+          try {
+            const [d, p, prof] = await Promise.all([
+              api.getDebts().catch(() => []),
+              api.getPersons().catch(() => []),
+              api.getProfile().catch(() => null)
+            ]);
+
+            debtsData = d;
+            personsData = p;
+            profileData = prof;
+
+            // If we got a profile, we're done
+            if (profileData) break;
+
+            // If not last attempt, wait and retry
+            if (i < 3) {
+              console.warn(`Profile sync attempt ${i + 1} failed, retrying...`);
+              await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+          } catch (err) {
+            console.error("Fetch attempt error:", err);
+            if (i === 3) break;
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+        }
+
+        if (isCancelled) return;
+
+        setDebts(debtsData || []);
+        setPersons(personsData || []);
+
+        if (profileData) {
+          setUserProfile(profileData);
+          if (!profileData.isComplete) {
+            setCurrentView('profile');
+          }
+        } else if (user) {
+          console.warn("Retries exhausted, using fallback profile");
+          setUserProfile({
+            id: user.id,
+            email: user.email,
+            firstName: 'Usuario',
+            lastName: '',
+            avatar: `https://ui-avatars.com/api/?name=${user.email}&background=6366f1&color=fff`,
+            isComplete: false
+          });
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Critical error in fetchData:', error);
       } finally {
-        setLoading(false);
+        if (!isCancelled) setLoading(false);
       }
     };
+
     fetchData();
-  }, []);
+    return () => { isCancelled = true; };
+  }, [user]);
 
   // Derived Stats
   const stats = useMemo(() => {
@@ -375,7 +426,7 @@ function MainAppContent() {
       </div>
 
       <main className="main-content">
-        {loading ? (
+        {(loading || !userProfile) ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '16px' }}>
             <div className="spinner"></div>
             <p style={{ color: 'var(--text-secondary)', fontSize: '14px', fontWeight: '500' }}>Cargando tus deudas...</p>
@@ -391,7 +442,7 @@ function MainAppContent() {
                 )}
                 <div>
                   <h2 className="page-title">{getPageTitle()}</h2>
-                  <p className="page-subtitle">Hola de nuevo, {userProfile.firstName} ✨</p>
+                  <p className="page-subtitle">Hola de nuevo, {userProfile?.firstName || 'Usuario'} ✨</p>
                 </div>
               </div>
 
@@ -405,10 +456,10 @@ function MainAppContent() {
                 )}
                 <div className="user-profile">
                   <div className="user-info">
-                    <span className="user-name">{userProfile.firstName} {userProfile.lastName}</span>
+                    <span className="user-name">{userProfile?.firstName} {userProfile?.lastName}</span>
                     <span className="user-role">Teamdroid Tech</span>
                   </div>
-                  <img src={userProfile.avatar} alt="Profile" className="avatar" />
+                  <img src={userProfile?.avatar || `https://ui-avatars.com/api/?name=User&background=6366f1&color=fff`} alt="Profile" className="avatar" />
                 </div>
               </div>
             </header>
