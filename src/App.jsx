@@ -41,7 +41,7 @@ function MainAppContent() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 1024);
 
   // History View State
-  const [historySortConfig, setHistorySortConfig] = useState({ key: 'date', direction: 'desc' });
+  const [historySortConfig, setHistorySortConfig] = useState({ key: null, direction: 'asc' });
   const [historyCurrentPage, setHistoryCurrentPage] = useState(1);
   const [historyItemsPerPage, setHistoryItemsPerPage] = useState(10);
   const [historySearchTerm, setHistorySearchTerm] = useState('');
@@ -263,10 +263,18 @@ function MainAppContent() {
   // --- History View Logic ---
   const handleHistorySort = (key) => {
     let direction = 'asc';
-    if (historySortConfig.key === key && historySortConfig.direction === 'asc') {
-      direction = 'desc';
+    let nextKey = key;
+
+    if (historySortConfig.key === key) {
+      if (historySortConfig.direction === 'asc') {
+        direction = 'desc';
+      } else {
+        // Third click: Reset
+        nextKey = null;
+      }
     }
-    setHistorySortConfig({ key, direction });
+
+    setHistorySortConfig({ key: nextKey, direction });
     setHistoryCurrentPage(1);
   };
 
@@ -287,7 +295,8 @@ function MainAppContent() {
         return rank[a.status] - rank[b.status];
       }
 
-      // Secondary sort: User selected column
+      // Secondary sort: User selected column (if any)
+      if (!historySortConfig.key) return 0;
 
       if (historySortConfig.key === 'date') {
         return historySortConfig.direction === 'asc'
@@ -332,7 +341,7 @@ function MainAppContent() {
   }
 
   const getSortIcon = (key) => {
-    if (historySortConfig.key !== key) return <ArrowUpDown size={14} className="sort-icon-inactive" />;
+    if (historySortConfig.key !== key) return null;
     return historySortConfig.direction === 'asc'
       ? <ArrowUp size={14} className="sort-icon-active" />
       : <ArrowDown size={14} className="sort-icon-active" />;

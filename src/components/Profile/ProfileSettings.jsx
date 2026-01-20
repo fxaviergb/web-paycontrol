@@ -196,7 +196,7 @@ export default function ProfileSettings({ profile, onUpdateProfile, onLogout }) 
                     </div>
                     <div className="stat-row">
                         <span>Plan Actual</span>
-                        <strong style={{ color: 'var(--color-premium)' }}>Premium Gold</strong>
+                        <strong style={{ color: 'var(--color-premium)' }}>Personal</strong>
                     </div>
 
                     <div className="profile-security-actions" style={{ marginTop: '32px', borderTop: '1px solid var(--border-subtle)', paddingTop: '24px' }}>
