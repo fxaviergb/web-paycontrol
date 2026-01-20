@@ -125,8 +125,13 @@
 .stat-total-display {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
+    /* Left aligned */
     gap: 16px;
     margin-top: auto;
+    margin-bottom: auto;
+    /* Vertically centered */
+    width: 100%;
 }
 
 .stat-total-value {
@@ -342,9 +347,9 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    margin-bottom: 16px;
+    padding-bottom: 0;
+    /* border-bottom: 1px solid rgba(255, 255, 255, 0.05); Removed by user request */
 }
 
 .debts-header h2 {
@@ -493,15 +498,19 @@
 /* Responsive Table Grid */
 .debt-grid {
     display: grid;
-    grid-template-columns: 48px 2.5fr 1fr 1fr 1fr 1fr 130px 150px;
+    grid-template-columns: 48px 1.5fr 0.9fr 1fr 1fr 1fr 120px;
     gap: 16px;
     align-items: center;
 }
 
+.debt-grid.history-view {
+    grid-template-columns: 48px 1.5fr 0.8fr 0.8fr 0.8fr 0.8fr 100px 120px;
+}
+
 .doc-header {
-    padding: 0 0 12px 0;
-    border-bottom: 1px solid var(--border-subtle);
-    margin-bottom: 16px;
+    padding: 0 0 4px 0;
+    /* border-bottom: 1px solid var(--border-subtle); Removed by user request */
+    margin-bottom: 8px;
     color: var(--text-secondary);
     font-size: 12px;
     font-weight: 600;
@@ -557,7 +566,7 @@
 }
 
 .show-mobile {
-    display: none;
+    display: none !important;
 }
 
 @media (max-width: 1024px) {
@@ -683,10 +692,211 @@
 
     .debt-grid {
         display: grid;
-        grid-template-columns: 36px 1fr auto;
-        gap: 12px;
+        grid-template-columns: 36px 1fr;
+        grid-template-rows: auto;
+        /* Single row again */
+        gap: 12px 12px;
         align-items: center;
         width: 100%;
+        position: relative;
+    }
+
+    .debt-icon {
+        grid-column: 1;
+        grid-row: 1;
+        margin-top: 0;
+    }
+
+    .debt-info {
+        grid-column: 2;
+        grid-row: 1;
+        width: 100%;
+        padding-right: 0;
+    }
+
+    .debt-actions-area {
+        /* Desktop only actions styling */
+        grid-column: auto;
+        grid-row: auto;
+        border-top: none;
+        width: auto;
+        margin-left: auto;
+        padding-top: 0;
+    }
+
+    /* --- Minimal Pay Button for Mobile (Restored) --- */
+    .btn-pay-minimal {
+        background-color: rgba(99, 102, 241, 0.15);
+        color: var(--color-accent);
+        border: 1px solid rgba(99, 102, 241, 0.3);
+        border-radius: 6px;
+        padding: 4px 8px;
+        min-width: 64px;
+        font-size: 10px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 24px;
+    }
+
+    .btn-view-minimal {
+        background-color: rgba(255, 255, 255, 0.08);
+        color: var(--text-secondary);
+        border: 1px solid var(--border-subtle);
+        border-radius: 6px;
+        padding: 4px 8px;
+        min-width: 64px;
+        font-size: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 24px;
+    }
+
+    .btn-pay-minimal:active,
+    .btn-view-minimal:active {
+        transform: scale(0.95);
+    }
+
+    .btn-view-minimal:hover {
+        background-color: var(--color-accent-hover, #4f46e5) !important;
+        filter: brightness(1.15);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+    .btn-icon-only {
+        background: transparent;
+        border: none;
+        color: var(--text-secondary);
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+
+    .btn-icon-only:hover {
+        background-color: var(--bg-surface-hover);
+        color: var(--text-primary);
+    }
+
+    .btn-back-filter {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-primary);
+        cursor: pointer;
+        padding: 6px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        margin-right: 4px;
+    }
+
+    .btn-back-filter:hover {
+        background: var(--bg-surface-hover);
+        border-color: var(--text-secondary);
+        transform: translateX(-2px);
+    }
+
+    .btn-pay-minimal:active {
+        background-color: var(--color-accent);
+        color: white;
+    }
+
+    /* New Internal Split Layout */
+    .mobile-debt-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 8px;
+        width: 100%;
+    }
+
+    .mobile-debt-left {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .mobile-debt-right {
+        text-align: right;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .mobile-flex-col {
+        display: flex !important;
+        flex-direction: column;
+    }
+
+    .show-mobile {
+        display: block !important;
+    }
+
+    .show-mobile.mobile-flex-col {
+        display: flex !important;
+        flex-direction: column;
+    }
+
+    .mobile-debt-right.show-mobile {
+        display: flex !important;
+    }
+
+    /* Progress Amount Badge */
+    .amount-progress-badge {
+        position: relative;
+        width: 70px;
+        height: 24px;
+        background-color: rgba(255, 255, 255, 0.05);
+        /* Subtle track */
+        border-radius: 6px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 4px;
+    }
+
+    .amount-progress-fill {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        background-color: var(--color-warning);
+        /* Yellow/Orange from palette */
+        opacity: 0.4;
+        /* Semi-transparent to keep text readable */
+        z-index: 0;
+        transition: width 0.3s ease;
+    }
+
+    .amount-progress-text {
+        position: relative;
+        z-index: 1;
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--text-primary);
+        line-height: 1;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        /* Ensure legibility */
+    }
+
+    .debt-grid.history-view {
+        grid-template-columns: 36px 1fr auto !important;
     }
 
     .debt-icon {
@@ -724,15 +934,24 @@
     }
 
     .action-pill-compact {
-        background-color: var(--color-accent);
-        color: white;
-        border: none;
-        border-radius: 20px;
+        background-color: rgba(255, 255, 255, 0.08);
+        color: var(--text-secondary);
+        border: 1px solid var(--border-subtle);
+        border-radius: 6px;
         padding: 6px 14px;
-        font-size: 12px;
-        font-weight: 600;
+        font-size: 11px;
+        font-weight: 700;
         cursor: pointer;
         transition: 0.2s;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+    }
+
+    .action-pill-compact:hover {
+        background-color: var(--bg-surface-hover);
+        color: var(--text-primary);
+        border-color: var(--text-muted);
+        transform: translateY(-1px);
     }
 
     .action-pill-compact:active {
@@ -745,11 +964,19 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 4px;
-        border: none;
+        padding: 6px;
+        border-radius: 6px;
+        border: 1px solid transparent;
         cursor: pointer;
-        opacity: 0.6;
+        transition: all 0.2s;
     }
+
+    .action-icon-eye:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+        border-color: var(--border-subtle);
+    }
+
 
     .mobile-meta-compact {
         display: flex;
@@ -790,4 +1017,429 @@
     .show-mobile {
         display: block;
     }
+}
+
+/* Sortable Headers */
+.sortable-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s;
+}
+
+.sortable-header:hover {
+    color: var(--color-accent);
+}
+
+.sort-icon-inactive {
+    opacity: 0.3;
+}
+
+.sort-icon-active {
+    color: var(--color-accent);
+}
+
+/* Pagination */
+/* Pagination */
+.pagination-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px;
+    margin-top: 16px;
+    /* border-top: 1px solid rgba(255, 255, 255, 0.05); Removed by user request */
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+@media (max-width: 768px) {
+    .pagination-controls {
+        padding-top: 12px;
+        margin-top: 12px;
+        gap: 10px;
+    }
+}
+
+.items-per-page-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pagination-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+    .pagination-label {
+        display: none;
+    }
+}
+
+.rows-select {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: inherit;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.rows-select:hover {
+    border-color: var(--color-accent);
+}
+
+.pagination-buttons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pagination-btn {
+    background-color: var(--bg-surface-hover);
+    color: var(--text-secondary);
+    border: 1px solid transparent;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 6px;
+    border-radius: 8px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background-color: var(--bg-card);
+    border-color: var(--border-subtle);
+    color: var(--text-primary);
+}
+
+.pagination-btn.active {
+    background-color: var(--color-accent);
+    color: white;
+    font-weight: 700;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    background-color: transparent;
+}
+
+/* --- History View Header & Search --- */
+.debts-header {
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background-color: transparent;
+    border-radius: 0;
+    padding: 0;
+}
+
+.debts-title {
+    font-size: 20px;
+    white-space: nowrap;
+    margin: 0;
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+/* Container for search + button */
+.debts-actions-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.debts-search-container {
+    display: flex;
+    align-items: center;
+    background-color: rgba(30, 41, 59, 0.5);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    padding: 8px 12px;
+    width: 320px;
+    /* Fixed width for desktop */
+    transition: all 0.2s ease;
+}
+
+.debts-search-container:focus-within {
+    border-color: var(--color-accent);
+    background-color: rgba(30, 41, 59, 0.8);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+.search-icon {
+    color: var(--text-muted);
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+
+.search-input {
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-size: 14px;
+    width: 100%;
+    outline: none;
+}
+
+.search-input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+
+/* --- Mobile Responsiveness for Header --- */
+@media (max-width: 768px) {
+    .debts-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .debts-title {
+        font-size: 18px;
+        width: 100%;
+        margin-bottom: 4px;
+    }
+
+    .debts-actions-container {
+        width: 100%;
+        flex-direction: row;
+        gap: 8px;
+    }
+
+    .debts-search-container {
+        width: 0;
+        flex: 1;
+        /* Search takes available space */
+        height: 40px;
+    }
+
+    .debts-header .btn-secondary {
+        height: 40px;
+        padding: 0 12px;
+        white-space: nowrap;
+        font-size: 13px;
+    }
+}
+
+/* --- Toggle Switch for Active Debts --- */
+.view-toggle {
+    display: flex;
+    background-color: rgba(30, 41, 59, 0.5);
+    padding: 2px;
+    border-radius: 8px;
+    border: 1px solid var(--border-subtle);
+}
+
+.toggle-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.toggle-btn:hover {
+    color: var(--text-primary);
+}
+
+.toggle-btn.active {
+    background-color: var(--color-accent);
+    color: white;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.debt-icon.lent {
+    color: var(--color-success);
+    background-color: rgba(16, 185, 129, 0.1);
+}
+
+.debt-icon.borrowed {
+    color: var(--color-danger);
+    background-color: rgba(239, 68, 68, 0.1);
+}
+
+/* --- DESKTOP REFINEMENTS (CONSOLIDATED VIEW) --- */
+@media (min-width: 769px) {
+    .debt-grid {
+        display: grid;
+        width: 100%;
+        gap: 16px;
+        align-items: center;
+    }
+
+    .grid-individual {
+        grid-template-columns: 48px 1.5fr 1fr 1fr 1fr 1fr 120px;
+    }
+
+    .grid-consolidated {
+        grid-template-columns: 48px 2fr 1fr 1fr 1fr 140px;
+    }
+
+    .btn-view-minimal {
+        background-color: rgba(255, 255, 255, 0.05);
+        color: var(--text-secondary);
+        border: 1px solid var(--border-subtle);
+        border-radius: 6px;
+        padding: 0 16px;
+        width: auto;
+        min-width: 120px;
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 34px;
+        box-shadow: none;
+    }
+
+    .btn-view-minimal:hover {
+        background-color: var(--bg-surface-hover);
+        color: var(--text-primary);
+        border-color: var(--text-muted);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+}
+
+/* --- Shared Minimal Button Component (Global) --- */
+.btn-icon-only {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.btn-icon-only:hover {
+    background-color: var(--bg-surface-hover);
+    color: var(--text-primary);
+}
+
+.btn-back-filter {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    margin-right: 8px;
+}
+
+.btn-back-filter:hover {
+    background: var(--bg-surface-hover);
+    border-color: var(--text-secondary);
+    transform: translateX(-2px);
+}
+
+/* --- MOBILE CONSOLIDATED SUMMARY (Vertical Badges) --- */
+.mobile-debt-row-consolidated {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 100%;
+    gap: 8px;
+}
+
+.mobile-debt-left {
+    flex: 1;
+    /* Grows to take all available space */
+    min-width: 0;
+}
+
+.vertical-badges-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    align-items: center;
+    /* Centered for better compactness */
+    flex-shrink: 0;
+}
+
+.badge-item {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 8px;
+    width: 110px;
+    /* Fixed width for perfect uniformity */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.badge-label {
+    opacity: 0.8;
+    font-size: 8.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.badge-value {
+    font-family: monospace;
+    font-size: 11px;
+}
+
+.badge-item.total {
+    background: rgba(99, 102, 241, 0.15);
+    color: #a5b4fc;
+}
+
+.badge-item.paid {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+}
+
+.badge-item.pending {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+}
+
+.btn-view-minimal.compact {
+    padding: 6px 8px;
+    /* More compact */
+    font-size: 9px;
+    /* Smaller font */
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.dot-separator {
+    opacity: 0.3;
 }
