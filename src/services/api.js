@@ -53,8 +53,18 @@ class MockService {
 
 class SupabaseService {
     async getProfile() {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return null;
+        let { data: { user } } = await supabase.auth.getUser();
+
+        // Fallback to local session if getUser fails (common in race conditions)
+        if (!user) {
+            const { data: { session } } = await supabase.auth.getSession();
+            user = session?.user;
+        }
+
+        if (!user) {
+            console.warn("getProfile: No user session found in any source");
+            return null;
+        }
 
         const { data, error } = await supabase
             .from('profiles')
