@@ -1,4 +1,4 @@
-# PayControl
+# PayControl - Gestión Financiera Personal
 
 [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-181818?style=for-the-badge&logo=supabase&logoColor=3ECF8E)](https://supabase.com/)
@@ -8,7 +8,7 @@
 
 ![PayControl Dashboard](./public/assets/screenshots/dashboard.png)
 
-## ✨ Funcionalidades Estrella
+## ✨ Funcionalidades
 
 *   **📊 Dashboard Inteligente**: Visualiza tu balance global, deudas activas y estadísticas avanzadas en una sola pantalla.
 *   **🔄 Arquitectura Híbrida**: Cambia instantáneamente entre **Modo Local (Mock)** para pruebas rápidas y **Modo Cloud (Supabase)** para persistencia real.
