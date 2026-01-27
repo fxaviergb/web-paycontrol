@@ -678,8 +678,9 @@
 
     /* Card Item optimization */
     .debt-item-minimal {
-        background-color: var(--bg-card);
+        background: linear-gradient(90deg, var(--card-gradient-color, transparent) 0%, var(--bg-card, #1f2937) 60%, var(--bg-card, #1f2937) 100%);
         border: 1px solid var(--border-subtle);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         border-radius: 12px;
         padding: 12px;
         margin-bottom: 12px;
@@ -724,11 +725,71 @@
         padding-top: 0;
     }
 
-    /* --- Minimal Pay Button for Mobile (Restored) --- */
+    /* Mobile Card Inner Styles */
+    .debt-item-minimal .debt-icon {
+        background-color: rgba(0, 0, 0, 0.2);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .debt-item-minimal .debt-counterparty-name {
+        color: white;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .debt-item-minimal .debt-reason-text {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Consolidated Mobile Badges */
+    .vertical-badges-stack .badge-item {
+        opacity: 0.9;
+    }
+
+    .vertical-badges-stack .badge-label {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .vertical-badges-stack .badge-value {
+        color: white;
+    }
+
+    .amount-progress-badge {
+        background-color: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 4px 8px;
+        display: flex;
+        align-items: center;
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+        height: 24px;
+    }
+
+    .amount-progress-fill {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        opacity: 0.3;
+        transition: width 0.5s ease;
+    }
+
+    .amount-progress-text {
+        position: relative;
+        z-index: 2;
+        font-size: 10px;
+        font-weight: 700;
+        color: white;
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Minimal Pay Button for Mobile */
     .btn-pay-minimal {
-        background-color: rgba(99, 102, 241, 0.15);
-        color: var(--color-accent);
-        border: 1px solid rgba(99, 102, 241, 0.3);
+        background-color: rgba(255, 255, 255, 0.15);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.3);
         border-radius: 6px;
         padding: 4px 8px;
         min-width: 64px;
@@ -744,9 +805,9 @@
     }
 
     .btn-view-minimal {
-        background-color: rgba(255, 255, 255, 0.08);
-        color: var(--text-secondary);
-        border: 1px solid var(--border-subtle);
+        background-color: rgba(0, 0, 0, 0.2);
+        color: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 6px;
         padding: 4px 8px;
         min-width: 64px;
@@ -759,6 +820,19 @@
         align-items: center;
         justify-content: center;
         height: 24px;
+    }
+
+    .debt-item-minimal .badge {
+        font-size: 9px;
+        padding: 4px 8px;
+        height: 26px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 70px;
+        background-color: rgba(255, 255, 255, 0.15) !important;
+        color: white !important;
+        border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
     .btn-pay-minimal:active,
