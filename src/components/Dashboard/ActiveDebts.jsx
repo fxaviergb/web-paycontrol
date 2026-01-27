@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ArrowUpRight, ArrowDownLeft, Clock, Eye, ArrowUpDown, ArrowUp, ArrowDown, Wallet, User, ArrowLeft } from 'lucide-react';
 import './dashboard.css';
+import { getCardStyle } from '../../utils/ui-helpers';
 
 export default function ActiveDebts({ debts, onDebtClick, onPayClick, onViewAll }) {
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
@@ -177,6 +178,8 @@ export default function ActiveDebts({ debts, onDebtClick, onPayClick, onViewAll 
         setViewMode('consolidated'); // Go back to consolidated list usually makes sense
     };
 
+
+
     return (
         <div className="card debts-container fade-in" style={{ animationDelay: '0.3s' }}>
             <div className="debts-header">
@@ -247,26 +250,31 @@ export default function ActiveDebts({ debts, onDebtClick, onPayClick, onViewAll 
                             /* INDIVIDUAL VIEW */
                             currentItems.map((debt) => {
                                 const pendingAmount = debt.amount - debt.paidAmount;
+                                const cardStyle = getCardStyle(debt.counterparty);
 
                                 return (
-                                    <div key={debt.id} className="debt-item-minimal debt-grid grid-individual">
-                                        <div className={`debt-icon ${debt.type}`}>
+                                    <div
+                                        key={debt.id}
+                                        className="debt-item-minimal debt-grid grid-individual"
+                                        style={cardStyle}
+                                    >
+                                        <div className={`debt-icon ${debt.type}`} style={{ backgroundColor: 'rgba(0,0,0,0.2)', borderColor: 'rgba(255,255,255,0.1)' }}>
                                             {debt.type === 'lent' ? <ArrowUpRight size={20} /> : <ArrowDownLeft size={20} />}
                                         </div>
 
                                         <div className="debt-info">
                                             <div className="mobile-debt-row">
                                                 <div className="mobile-debt-left">
-                                                    <h4 className="debt-counterparty-name">{debt.counterparty}</h4>
-                                                    <div className="debt-reason-text">{debt.reason}</div>
-                                                    <div className="show-mobile mobile-flex-col" style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px', gap: '1px', alignItems: 'flex-start' }}>
+                                                    <h4 className="debt-counterparty-name" style={{ color: 'white', textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>{debt.counterparty}</h4>
+                                                    <div className="debt-reason-text" style={{ color: 'rgba(255,255,255,0.7)' }}>{debt.reason}</div>
+                                                    <div className="show-mobile mobile-flex-col" style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', marginTop: '4px', gap: '1px', alignItems: 'flex-start' }}>
                                                         <span style={{ fontWeight: '500' }}>Total: ${debt.amount.toFixed(0)}</span>
                                                         <span style={{ opacity: 0.7, fontSize: '10px' }}>{debt.date?.split('T')[0]}</span>
                                                     </div>
                                                 </div>
 
                                                 <div className="mobile-debt-right show-mobile" style={{ gap: '6px' }}>
-                                                    <div className="amount-progress-badge">
+                                                    <div className="amount-progress-badge" style={{ backgroundColor: 'rgba(0,0,0,0.3)', borderColor: 'rgba(255,255,255,0.1)' }}>
                                                         <div
                                                             className="amount-progress-fill"
                                                             style={{
@@ -275,19 +283,21 @@ export default function ActiveDebts({ debts, onDebtClick, onPayClick, onViewAll 
                                                                     (debt.paidAmount / debt.amount) > 0.1 ? 'var(--color-warning)' : 'var(--color-danger)'
                                                             }}
                                                         ></div>
-                                                        <div className="amount-progress-text">
+                                                        <div className="amount-progress-text" style={{ color: 'white' }}>
                                                             ${pendingAmount.toFixed(0)}
                                                         </div>
                                                     </div>
                                                     <button
                                                         onClick={(e) => { e.stopPropagation(); onPayClick(debt); }}
                                                         className="btn-pay-minimal"
+                                                        style={{ backgroundColor: 'rgba(255,255,255,0.15)', color: 'white', borderColor: 'rgba(255,255,255,0.3)' }}
                                                     >
                                                         Pagar
                                                     </button>
                                                     <button
                                                         onClick={(e) => { e.stopPropagation(); onDebtClick(debt); }}
                                                         className="btn-view-minimal"
+                                                        style={{ backgroundColor: 'rgba(0,0,0,0.2)', color: 'rgba(255,255,255,0.8)', borderColor: 'rgba(255,255,255,0.1)' }}
                                                     >
                                                         Ver
                                                     </button>
@@ -333,24 +343,30 @@ export default function ActiveDebts({ debts, onDebtClick, onPayClick, onViewAll 
                             currentItems.map((group) => {
                                 const netBalance = group.netBalance;
                                 const isPositive = netBalance >= 0;
+                                const cardStyle = getCardStyle(group.counterparty);
 
                                 return (
-                                    <div key={group.id} className="debt-item-minimal debt-grid grid-consolidated">
-                                        <div className={`debt-icon ${isPositive ? 'lent' : 'borrowed'}`}>
+                                    <div
+                                        key={group.id}
+                                        className="debt-item-minimal debt-grid grid-consolidated"
+                                        style={cardStyle}
+                                    >
+                                        <div className={`debt-icon ${isPositive ? 'lent' : 'borrowed'}`} style={{ backgroundColor: 'rgba(0,0,0,0.2)', borderColor: 'rgba(255,255,255,0.1)' }}>
                                             {isPositive ? <ArrowUpRight size={20} /> : <ArrowDownLeft size={20} />}
                                         </div>
 
                                         <div className="debt-info">
                                             <div className="mobile-debt-row-consolidated">
                                                 <div className="mobile-debt-left">
-                                                    <h4 className="debt-counterparty-name">{group.counterparty}</h4>
-                                                    <div className="debt-reason-text">{group.count} deudas</div>
+                                                    <h4 className="debt-counterparty-name" style={{ color: 'white', textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>{group.counterparty}</h4>
+                                                    <div className="debt-reason-text" style={{ color: 'rgba(255,255,255,0.7)' }}>{group.count} deudas</div>
 
                                                     {/* Button moved here for better mobile balance */}
                                                     <div className="show-mobile" style={{ marginTop: '8px' }}>
                                                         <button
                                                             className="btn-view-minimal compact"
                                                             onClick={() => handleViewDetails(group.counterparty)}
+                                                            style={{ backgroundColor: 'rgba(255,255,255,0.15)', color: 'white', borderColor: 'rgba(255,255,255,0.3)' }}
                                                         >
                                                             DETALLES
                                                         </button>
@@ -359,17 +375,17 @@ export default function ActiveDebts({ debts, onDebtClick, onPayClick, onViewAll 
 
                                                 <div className="mobile-debt-middle show-mobile">
                                                     <div className="vertical-badges-stack">
-                                                        <div className="badge-item total">
-                                                            <span className="badge-label">Total</span>
-                                                            <span className="badge-value">${group.totalOriginal.toFixed(0)}</span>
+                                                        <div className="badge-item total" style={{ opacity: 0.9 }}>
+                                                            <span className="badge-label" style={{ color: 'rgba(255,255,255,0.7)' }}>Total</span>
+                                                            <span className="badge-value" style={{ color: 'white' }}>${group.totalOriginal.toFixed(0)}</span>
                                                         </div>
-                                                        <div className="badge-item paid">
-                                                            <span className="badge-label">Pagado</span>
-                                                            <span className="badge-value">${group.totalPaid.toFixed(0)}</span>
+                                                        <div className="badge-item paid" style={{ opacity: 0.9 }}>
+                                                            <span className="badge-label" style={{ color: 'rgba(255,255,255,0.7)' }}>Pagado</span>
+                                                            <span className="badge-value" style={{ color: 'white' }}>${group.totalPaid.toFixed(0)}</span>
                                                         </div>
-                                                        <div className="badge-item pending">
-                                                            <span className="badge-label">Pendiente</span>
-                                                            <span className="badge-value">${group.totalPending.toFixed(0)}</span>
+                                                        <div className="badge-item pending" style={{ opacity: 0.9 }}>
+                                                            <span className="badge-label" style={{ color: 'rgba(255,255,255,0.7)' }}>Pendiente</span>
+                                                            <span className="badge-value" style={{ color: 'white' }}>${group.totalPending.toFixed(0)}</span>
                                                         </div>
                                                     </div>
                                                 </div>

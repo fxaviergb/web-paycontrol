@@ -2,7 +2,6 @@
 
 [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-181818?style=for-the-badge&logo=supabase&logoColor=3ECF8E)](https://supabase.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
 **PayControl** es una plataforma de gestión financiera personal diseñada para llevar un control riguroso de deudas prestadas y pedidas. Con una interfaz de alto impacto y un motor robusto en la nube, PayControl transforma la forma en que manejas tus compromisos económicos.
 
@@ -92,4 +91,4 @@ src/
 
 ---
 
-Desarrollado con 🔥 por **xavogb08**
+Desarrollado por **Teamdroid** 🤖
