@@ -18,6 +18,7 @@ import LoginView from './components/Auth/LoginView';
 import { Plus, Menu, UserPlus, Receipt, ArrowUpRight, ArrowDownLeft, Clock, Eye, Archive, LayoutDashboard, User, Settings, LogOut, ArrowUp, ArrowDown, ArrowUpDown, Wallet, Search } from 'lucide-react';
 import './app.css';
 import './components/Dashboard/dashboard.css';
+import { getCardStyle } from './utils/ui-helpers';
 
 function MainAppContent() {
   const { user, signOut, isPasswordRecovery } = useAuth();
@@ -517,94 +518,99 @@ function MainAppContent() {
                       <div style={{ textAlign: 'center' }}>ACCIONES</div>
                     </div>
 
-                    {currentHistoryItems.map((debt, index) => (
-                      <div key={debt.id} className="debt-item-minimal fade-in" style={{ animationDelay: `${index * 0.05}s` }}>
-                        <div className="debt-grid history-view">
-                          <div className="debt-icon-container">
-                            <div className={`debt-icon ${debt.type}`}>
-                              {debt.type === 'lent' ? <ArrowUpRight size={20} /> : <ArrowDownLeft size={20} />}
-                            </div>
-                          </div>
-                          <div className="debt-info">
-                            <div className="mobile-debt-row">
-                              <div className="mobile-debt-left">
-                                <div className="debt-counterparty-name">{debt.counterparty}</div>
-                                <div className="debt-reason-text">{debt.reason}</div>
-                                <div className="show-mobile mobile-flex-col" style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px', gap: '1px', alignItems: 'flex-start' }}>
-                                  <span style={{ fontWeight: '500' }}>Total: ${debt.amount.toFixed(0)}</span>
-                                  <span style={{ opacity: 0.7, fontSize: '10px' }}>{debt.date?.split('T')[0]}</span>
-                                </div>
+                    {currentHistoryItems.map((debt, index) => {
+                      const cardStyle = getCardStyle(debt.counterparty);
+                      return (
+                        <div key={debt.id} className="debt-item-minimal fade-in" style={{ ...cardStyle, animationDelay: `${index * 0.05}s` }}>
+                          <div className="debt-grid history-view">
+                            <div className="debt-icon-container">
+                              <div className={`debt-icon ${debt.type}`} style={{ backgroundColor: 'rgba(0,0,0,0.2)', borderColor: 'rgba(255,255,255,0.1)' }}>
+                                {debt.type === 'lent' ? <ArrowUpRight size={20} /> : <ArrowDownLeft size={20} />}
                               </div>
-
-                              <div className="mobile-debt-right show-mobile" style={{ gap: '6px' }}>
-                                {/* Progress Badge */}
-                                <div className="amount-progress-badge">
-                                  <div
-                                    className="amount-progress-fill"
-                                    style={{
-                                      width: `${Math.min((debt.paidAmount / debt.amount) * 100, 100)}%`,
-                                      backgroundColor: debt.status === 'active' ? 'var(--color-warning)' : 'var(--color-success)'
-                                    }}
-                                  ></div>
-                                  <div className="amount-progress-text">
-                                    ${(debt.status === 'active' ? (debt.amount - debt.paidAmount) : debt.amount).toFixed(0)}
+                            </div>
+                            <div className="debt-info">
+                              <div className="mobile-debt-row">
+                                <div className="mobile-debt-left">
+                                  <div className="debt-counterparty-name" style={{ color: 'white', textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>{debt.counterparty}</div>
+                                  <div className="debt-reason-text" style={{ color: 'rgba(255,255,255,0.7)' }}>{debt.reason}</div>
+                                  <div className="show-mobile mobile-flex-col" style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', marginTop: '4px', gap: '1px', alignItems: 'flex-start' }}>
+                                    <span style={{ fontWeight: '500' }}>Total: ${debt.amount.toFixed(0)}</span>
+                                    <span style={{ opacity: 0.7, fontSize: '10px' }}>{debt.date?.split('T')[0]}</span>
                                   </div>
                                 </div>
 
-                                {debt.status === 'active' ? (
+                                <div className="mobile-debt-right show-mobile" style={{ gap: '6px' }}>
+                                  {/* Progress Badge */}
+                                  <div className="amount-progress-badge" style={{ backgroundColor: 'rgba(0,0,0,0.3)', borderColor: 'rgba(255,255,255,0.1)' }}>
+                                    <div
+                                      className="amount-progress-fill"
+                                      style={{
+                                        width: `${Math.min((debt.paidAmount / debt.amount) * 100, 100)}%`,
+                                        backgroundColor: debt.status === 'active' ? 'var(--color-warning)' : 'var(--color-success)'
+                                      }}
+                                    ></div>
+                                    <div className="amount-progress-text" style={{ color: 'white' }}>
+                                      ${(debt.status === 'active' ? (debt.amount - debt.paidAmount) : debt.amount).toFixed(0)}
+                                    </div>
+                                  </div>
+
+                                  {debt.status === 'active' ? (
+                                    <button
+                                      onClick={(e) => { e.stopPropagation(); setSelectedDebtToPay(debt); }}
+                                      className="btn-pay-minimal"
+                                      style={{ backgroundColor: 'rgba(255,255,255,0.15)', color: 'white', borderColor: 'rgba(255,255,255,0.3)' }}
+                                    >
+                                      Pagar
+                                    </button>
+                                  ) : (
+                                    <span className={`badge ${debt.status === 'archived' ? 'secondary' : 'success'}`} style={{ fontSize: '9px', padding: '4px 8px', height: '26px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '70px', backgroundColor: 'rgba(255,255,255,0.15)', color: 'white', border: '1px solid rgba(255,255,255,0.2)' }}>
+                                      {debt.status === 'archived' ? 'ARCH' : 'PAGADO'}
+                                    </span>
+                                  )}
                                   <button
-                                    onClick={(e) => { e.stopPropagation(); setSelectedDebtToPay(debt); }}
-                                    className="btn-pay-minimal"
+                                    onClick={(e) => { e.stopPropagation(); setSelectedDebtDetails(debt); }}
+                                    className="btn-view-minimal"
+                                    style={{ backgroundColor: 'rgba(0,0,0,0.2)', color: 'rgba(255,255,255,0.8)', borderColor: 'rgba(255,255,255,0.1)' }}
                                   >
-                                    Pagar
+                                    Ver
                                   </button>
-                                ) : (
-                                  <span className={`badge ${debt.status === 'archived' ? 'secondary' : 'success'}`} style={{ fontSize: '9px', padding: '4px 8px', height: '26px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '70px' }}>
-                                    {debt.status === 'archived' ? 'ARCH' : 'PAGADO'}
-                                  </span>
-                                )}
-                                <button
-                                  onClick={(e) => { e.stopPropagation(); setSelectedDebtDetails(debt); }}
-                                  className="btn-view-minimal"
-                                >
-                                  Ver
-                                </button>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                          <div className="hide-mobile desktop-col-date">
-                            {debt.date?.split('T')[0]}
-                          </div>
-                          <div className="hide-mobile desktop-col-amount">
-                            ${debt.amount.toFixed(2)}
-                          </div>
-                          <div className="hide-mobile desktop-col-paid">
-                            ${debt.paidAmount.toFixed(2)}
-                          </div>
-                          <div className="hide-mobile desktop-col-pending">
-                            ${(debt.amount - debt.paidAmount).toFixed(2)}
-                          </div>
-                          <div className="hide-mobile desktop-col-status">
-                            <span className={`badge ${debt.status === 'active' ? 'warning' :
-                              debt.status === 'archived' ? 'secondary' : 'success'
-                              }`}>
-                              {debt.status === 'active' ? <Clock size={12} /> :
-                                debt.status === 'archived' ? <Archive size={12} /> : null}
-                              {debt.status === 'active' ? ' Pendiente' :
-                                debt.status === 'archived' ? ' Archivado' : ' Pagado'}
-                            </span>
-                          </div>
-                          <div className="debt-actions-area hide-mobile">
-                            {debt.status === 'active' && (
-                              <button className="action-pill-compact" onClick={() => setSelectedDebtToPay(debt)}>Pagar</button>
-                            )}
-                            <button className="action-icon-eye" onClick={() => setSelectedDebtDetails(debt)}>
-                              <Eye size={18} />
-                            </button>
+                            <div className="hide-mobile desktop-col-date">
+                              {debt.date?.split('T')[0]}
+                            </div>
+                            <div className="hide-mobile desktop-col-amount">
+                              ${debt.amount.toFixed(2)}
+                            </div>
+                            <div className="hide-mobile desktop-col-paid">
+                              ${debt.paidAmount.toFixed(2)}
+                            </div>
+                            <div className="hide-mobile desktop-col-pending">
+                              ${(debt.amount - debt.paidAmount).toFixed(2)}
+                            </div>
+                            <div className="hide-mobile desktop-col-status">
+                              <span className={`badge ${debt.status === 'active' ? 'warning' :
+                                debt.status === 'archived' ? 'secondary' : 'success'
+                                }`}>
+                                {debt.status === 'active' ? <Clock size={12} /> :
+                                  debt.status === 'archived' ? <Archive size={12} /> : null}
+                                {debt.status === 'active' ? ' Pendiente' :
+                                  debt.status === 'archived' ? ' Archivado' : ' Pagado'}
+                              </span>
+                            </div>
+                            <div className="debt-actions-area hide-mobile">
+                              {debt.status === 'active' && (
+                                <button className="action-pill-compact" onClick={() => setSelectedDebtToPay(debt)}>Pagar</button>
+                              )}
+                              <button className="action-icon-eye" onClick={() => setSelectedDebtDetails(debt)}>
+                                <Eye size={18} />
+                              </button>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
 
                   {/* Pagination Footer */}
@@ -762,7 +768,7 @@ function MainAppContent() {
           </>
         )}
       </main>
-    </div>
+    </div >
   );
 }
 
